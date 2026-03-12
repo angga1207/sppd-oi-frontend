@@ -1,0 +1,94 @@
+'use client';
+
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  FiHome,
+  FiFileText,
+  FiBarChart2,
+  FiActivity,
+  FiSend,
+  FiX,
+} from 'react-icons/fi';
+
+const menuItems = [
+  { label: 'Dashboard', href: '/dashboard', icon: FiHome },
+  { label: 'Surat Tugas', href: '/dashboard/surat-tugas', icon: FiFileText },
+  { label: 'SPD Saya', href: '/dashboard/spd-saya', icon: FiSend },
+  { label: 'Laporan', href: '/dashboard/laporan', icon: FiBarChart2 },
+  { label: 'Aktivitas', href: '/dashboard/aktivitas', icon: FiActivity },
+];
+
+interface SidebarProps {
+  isOpen: boolean;
+  collapsed: boolean;
+  onClose: () => void;
+}
+
+export default function Sidebar({ isOpen, collapsed, onClose }: SidebarProps) {
+  const pathname = usePathname();
+
+  const sidebarClasses = [
+    'app-sidebar bg-bubblegum-gradient-vertical text-white flex flex-col',
+    isOpen ? 'open' : '',
+    collapsed ? 'collapsed' : '',
+  ].filter(Boolean).join(' ');
+
+  return (
+    <aside className={sidebarClasses}>
+      {/* Logo + Close button (mobile) */}
+      <div className="sidebar-header p-6 flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <Image src="/logo-oi.png" alt="Logo Ogan Ilir" width={32} height={32} className="object-contain" />
+        </div>
+        <div className="sidebar-text flex-1 min-w-0">
+          <h2 className="text-lg font-bold leading-tight">e-SPD</h2>
+          <p className="text-[10px] text-white/70 leading-tight">Ogan Ilir</p>
+        </div>
+        {/* Close button — only shown on mobile */}
+        <button onClick={onClose} className="sidebar-close-btn text-white/80 hover:text-white">
+          <FiX className="text-xl" />
+        </button>
+      </div>
+
+      {/* Divider */}
+      <div className="mx-5 h-px bg-white/20" />
+
+      {/* Navigation Menu */}
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        {menuItems.map((item) => {
+          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={collapsed ? item.label : undefined}
+              className={`sidebar-nav-item flex items-center gap-3 px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 ${isActive
+                ? 'bg-white/25 backdrop-blur-sm shadow-lg shadow-black/10 text-white'
+                : 'text-white/70 hover:bg-white/10 hover:text-white'
+                }`}
+            >
+              <item.icon className="text-lg flex-shrink-0" />
+              <span className="sidebar-text">{item.label}</span>
+              {isActive && (
+                <div className="sidebar-text ml-auto w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Bottom Section */}
+      <div className="p-4">
+        <div className="sidebar-bottom p-3 rounded-2xl bg-white/10 backdrop-blur-sm text-center">
+          <p className="sidebar-text text-[10px] text-white/60">Powered by</p>
+          <p className="sidebar-text text-xs font-semibold text-white/90 mt-0.5">
+            Diskominfo Kab. Ogan Ilir
+          </p>
+        </div>
+      </div>
+    </aside>
+  );
+}
