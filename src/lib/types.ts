@@ -80,6 +80,20 @@ export interface Kecamatan {
 
 // ============ Surat Tugas & SPD ============
 
+export interface PejabatPembuatKomitmen {
+  id: number;
+  instance_id: number;
+  nama: string;
+  nip: string;
+  jabatan: string | null;
+  pangkat: string | null;
+  golongan: string | null;
+  is_active: boolean;
+  instance?: Instance;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export type SuratTugasStatus = 'draft' | 'dikirim' | 'ditandatangani' | 'ditolak' | 'selesai';
 
 export interface KategoriSurat {
@@ -171,6 +185,12 @@ export interface SuratTugas {
   penandatangan_nip: string | null;
   penandatangan_jabatan: string | null;
   penandatangan_instance_id: number | null;
+  ppk_nama: string | null;
+  ppk_nip: string | null;
+  ppk_jabatan: string | null;
+  ppk_pangkat: string | null;
+  ppk_golongan: string | null;
+  ppk_instance_id: number | null;
   instance_id: number | null;
   jenis_perjalanan: 'luar_kabupaten' | 'dalam_kabupaten' | null;
   tujuan_provinsi_id: string | null;
@@ -204,6 +224,7 @@ export interface SuratTugas {
   instance?: Instance;
   penandatangan_instance?: Instance;
   pemberi_perintah_instance?: Instance;
+  ppk_instance?: Instance;
   created_by_user?: User;
   pegawai?: SuratTugasPegawai[];
   surat_perjalanan_dinas?: SuratPerjalananDinas[];
@@ -228,6 +249,12 @@ export interface SuratTugasFormData {
   penandatangan_nip: string;
   penandatangan_jabatan: string;
   penandatangan_instance_id: number | null;
+  ppk_nama: string;
+  ppk_nip: string;
+  ppk_jabatan: string;
+  ppk_pangkat: string;
+  ppk_golongan: string;
+  ppk_instance_id: number | null;
   jenis_perjalanan: 'luar_kabupaten' | 'dalam_kabupaten' | '';
   tujuan_provinsi_id: string;
   tujuan_provinsi_nama: string;

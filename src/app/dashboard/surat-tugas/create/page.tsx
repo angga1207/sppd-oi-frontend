@@ -79,6 +79,12 @@ const emptyForm: SuratTugasFormData = {
     penandatangan_nip: '',
     penandatangan_jabatan: '',
     penandatangan_instance_id: null,
+    ppk_nama: '',
+    ppk_nip: '',
+    ppk_jabatan: '',
+    ppk_pangkat: '',
+    ppk_golongan: '',
+    ppk_instance_id: null,
     jenis_perjalanan: '',
     tujuan_provinsi_id: '',
     tujuan_provinsi_nama: '',
@@ -222,6 +228,12 @@ export default function SuratTugasFormPage() {
                     penandatangan_nip: st.penandatangan_nip || '',
                     penandatangan_jabatan: st.penandatangan_jabatan || '',
                     penandatangan_instance_id: st.penandatangan_instance_id,
+                    ppk_nama: st.ppk_nama || '',
+                    ppk_nip: st.ppk_nip || '',
+                    ppk_jabatan: st.ppk_jabatan || '',
+                    ppk_pangkat: st.ppk_pangkat || '',
+                    ppk_golongan: st.ppk_golongan || '',
+                    ppk_instance_id: st.ppk_instance_id,
                     jenis_perjalanan: st.jenis_perjalanan || '',
                     tujuan_provinsi_id: st.tujuan_provinsi_id || '',
                     tujuan_provinsi_nama: st.tujuan_provinsi_nama || '',
@@ -866,6 +878,33 @@ export default function SuratTugasFormPage() {
             }
         }
     }, [instances, form.penandatangan_instance_id, selectedPenandatanganInstance]);
+
+    // Auto-fetch PPK for user's instance on initial load (create mode only)
+    useEffect(() => {
+        if (isEdit) return; // In edit mode, PPK is loaded from saved data
+        if (!user?.instance_id) return;
+
+        const fetchPpk = async () => {
+            try {
+                const res = await api.get(`/ppk/instance/${user.instance_id}`);
+                if (res.data.success && res.data.data) {
+                    const ppk = res.data.data;
+                    setForm(prev => ({
+                        ...prev,
+                        ppk_nama: ppk.nama || '',
+                        ppk_nip: ppk.nip || '',
+                        ppk_jabatan: ppk.jabatan || '',
+                        ppk_pangkat: ppk.pangkat || '',
+                        ppk_golongan: ppk.golongan || '',
+                        ppk_instance_id: ppk.instance_id || null,
+                    }));
+                }
+            } catch { /* ignore */ }
+        };
+
+        fetchPpk();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.instance_id, isEdit]);
 
     // Helper: check if RichTextEditor HTML content is effectively empty
     const isHtmlEmpty = (html: string | null | undefined): boolean => {
@@ -1885,6 +1924,35 @@ export default function SuratTugasFormPage() {
                                     noOptionsMessage="Tidak ada instansi"
                                     isDisabled
                                 />
+                            </div>
+
+                            {/* Pejabat Pembuat Komitmen (PPK) — auto-filled from master data */}
+                            <div className="border border-bubblegum-200 rounded-2xl p-4 bg-bubblegum-50/30">
+                                <label className="block text-sm font-semibold text-bubblegum-700 mb-2">
+                                    <FiUserCheck className="inline -mt-0.5 mr-1" />
+                                    Pejabat Pembuat Komitmen (PPK)
+                                    <span className="text-xs font-normal text-bubblegum-400 ml-2">(otomatis dari Master PPK)</span>
+                                </label>
+                                {form.ppk_nama ? (
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm font-medium text-bubblegum-800">{form.ppk_nama}</span>
+                                            {form.ppk_jabatan && (
+                                                <span className="text-xs text-bubblegum-400">&mdash; {form.ppk_jabatan}</span>
+                                            )}
+                                        </div>
+                                        <p className="text-xs text-gray-500">
+                                            NIP: {form.ppk_nip}
+                                            {(form.ppk_pangkat || form.ppk_golongan) && (
+                                                <> &middot; {[form.ppk_pangkat, form.ppk_golongan].filter(Boolean).join(' / ')}</>
+                                            )}
+                                        </p>
+                                    </div>
+                                ) : (
+                                    <p className="text-xs text-bubblegum-400 italic">
+                                        Belum ada PPK yang ditetapkan untuk OPD Anda. Hubungi Super Admin untuk mengatur Master PPK.
+                                    </p>
+                                )}
                             </div>
 
                             {/* Tempat & Tanggal */}

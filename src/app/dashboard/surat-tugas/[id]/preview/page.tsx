@@ -457,7 +457,7 @@ export default function SuratTugasPreviewPage() {
                                             </div>
                                             <table className="w-full border border-black mb-6" style={{ borderCollapse: 'collapse', fontSize: '10pt' }}>
                                                 <tbody>
-                                                    <SpdRow no="1" label="Pejabat Pembuat Komitmen" value={data.penandatangan_nama || '-'} />
+                                                    <SpdRow no="1" label="Pejabat Pembuat Komitmen" value={data.ppk_nama || data.penandatangan_nama || '-'} />
                                                     <SpdRow no="2" label="Nama / NIP Pegawai yang melaksanakan perjalanan dinas" value={pegawai ? `${pegawai.nama_lengkap}\nNIP. ${pegawai.nip}` : '-'} multiline />
                                                     <SpdRow no="3" label="Pangkat dan Golongan" value={pegawai ? [pegawai.pangkat, pegawai.golongan].filter(Boolean).join(' / ') || '-' : '-'} />
                                                     <SpdRow no="4" label="Jabatan / Instansi" value={pegawai ? [pegawai.jabatan, data.instance?.name].filter(Boolean).join(' / ') : '-'} />
@@ -514,7 +514,7 @@ export default function SuratTugasPreviewPage() {
                                                     <p className="text-[10pt]">Pada tanggal &nbsp;&nbsp;&nbsp;: {formatTanggal(data.signed_at || data.tanggal_dikeluarkan)}</p>
                                                 </div>
                                                 <div className="text-center" style={{ width: '45%' }}>
-                                                    <p className="font-semibold">{data.penandatangan_jabatan || 'Pejabat Pembuat Komitmen'}</p>
+                                                    <p className="font-semibold">{data.penandatangan_jabatan || 'Penandatangan'}</p>
                                                     <div className="h-20 flex items-center justify-center">
                                                         {(data.status === 'ditandatangani' || data.status === 'selesai') ? (
                                                             <div className="flex flex-col items-center gap-0.5">
@@ -568,8 +568,8 @@ export default function SuratTugasPreviewPage() {
                                                                 <div className="text-center" style={{ width: '220px' }}>
                                                                     <p className="font-semibold">Pejabat Pembuat Komitmen,</p>
                                                                     <div className="h-14"></div>
-                                                                    <p className="font-bold underline underline-offset-2 decoration-1">{data.penandatangan_nama || '...........................'}</p>
-                                                                    {data.penandatangan_nip && (<p className="text-[9pt]">NIP. {data.penandatangan_nip}</p>)}
+                                                                    <p className="font-bold underline underline-offset-2 decoration-1">{(data.ppk_nama || data.penandatangan_nama) || '...........................'}</p>
+                                                                    {(data.ppk_nip || data.penandatangan_nip) && (<p className="text-[9pt]">NIP. {data.ppk_nip || data.penandatangan_nip}</p>)}
                                                                 </div>
                                                             </div>
                                                         </td>

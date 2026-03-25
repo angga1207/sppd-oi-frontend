@@ -13,6 +13,7 @@ import {
   FiX,
   FiExternalLink,
   FiShield,
+  FiUserCheck,
 } from 'react-icons/fi';
 import { useAuth } from '@/context/AuthContext';
 import { APP_VERSION, APP_DEVELOPER } from '@/lib/version';
@@ -29,6 +30,7 @@ const menuItems: MenuItem[] = [
   { label: 'Surat Tugas', href: '/dashboard/surat-tugas', icon: FiFileText },
   { label: 'SPD Saya', href: '/dashboard/spd-saya', icon: FiSend },
   { label: 'Daftar Pegawai', href: '/dashboard/daftar-pegawai', icon: FiUsers, superAdminOnly: true },
+  { label: 'Master PPK', href: '/dashboard/ppk', icon: FiUserCheck, superAdminOnly: true },
   { label: 'Keamanan Login', href: '/dashboard/keamanan-login', icon: FiShield, superAdminOnly: true },
   { label: 'Laporan', href: '/dashboard/laporan', icon: FiBarChart2 },
   { label: 'Aktivitas', href: '/dashboard/aktivitas', icon: FiActivity },

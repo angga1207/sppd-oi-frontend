@@ -69,6 +69,25 @@ export default function SuratTugasDetailPage() {
                                 )}
                             </div>
                         </div>
+
+                        {/* PPK */}
+                        {data.ppk_nama && (
+                            <div className="glass-card rounded-3xl p-5 border border-bubblegum-100">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="w-8 h-8 rounded-xl bg-gradient-to-br from-mint-400 to-candy-500 text-white flex items-center justify-center shadow-md">
+                                        <FiAward className="text-sm" />
+                                    </span>
+                                    <h3 className="text-sm font-bold text-bubblegum-700 uppercase tracking-wide">Pejabat Pembuat Komitmen</h3>
+                                </div>
+                                <div className="space-y-2.5">
+                                    <DetailField label="Nama" value={data.ppk_nama} bold />
+                                    <DetailField label="NIP" value={data.ppk_nip || '-'} />
+                                    {data.ppk_jabatan && <DetailField label="Jabatan" value={data.ppk_jabatan} />}
+                                    {data.ppk_pangkat && <DetailField label="Pangkat" value={data.ppk_pangkat} />}
+                                    {data.ppk_golongan && <DetailField label="Golongan" value={data.ppk_golongan} />}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Dasar */}
