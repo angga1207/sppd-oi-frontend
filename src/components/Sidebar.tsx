@@ -9,13 +9,27 @@ import {
   FiBarChart2,
   FiActivity,
   FiSend,
+  FiUsers,
   FiX,
+  FiExternalLink,
+  FiShield,
 } from 'react-icons/fi';
+import { useAuth } from '@/context/AuthContext';
+import { APP_VERSION, APP_DEVELOPER } from '@/lib/version';
 
-const menuItems = [
+interface MenuItem {
+  label: string;
+  href: string;
+  icon: typeof FiHome;
+  superAdminOnly?: boolean;
+}
+
+const menuItems: MenuItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: FiHome },
   { label: 'Surat Tugas', href: '/dashboard/surat-tugas', icon: FiFileText },
   { label: 'SPD Saya', href: '/dashboard/spd-saya', icon: FiSend },
+  { label: 'Daftar Pegawai', href: '/dashboard/daftar-pegawai', icon: FiUsers, superAdminOnly: true },
+  { label: 'Keamanan Login', href: '/dashboard/keamanan-login', icon: FiShield, superAdminOnly: true },
   { label: 'Laporan', href: '/dashboard/laporan', icon: FiBarChart2 },
   { label: 'Aktivitas', href: '/dashboard/aktivitas', icon: FiActivity },
 ];
@@ -28,6 +42,13 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, collapsed, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const isSuperAdmin = user?.role?.slug === 'super-admin';
+
+  const visibleMenuItems = menuItems.filter(
+    (item) => !item.superAdminOnly || isSuperAdmin
+  );
 
   const sidebarClasses = [
     'app-sidebar bg-bubblegum-gradient-vertical text-white flex flex-col',
@@ -57,7 +78,7 @@ export default function Sidebar({ isOpen, collapsed, onClose }: SidebarProps) {
 
       {/* Navigation Menu */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
+        {visibleMenuItems.map((item) => {
           const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
 
           return (
@@ -81,12 +102,26 @@ export default function Sidebar({ isOpen, collapsed, onClose }: SidebarProps) {
       </nav>
 
       {/* Bottom Section */}
-      <div className="p-4">
+      <div className="p-4 space-y-2">
+        {/* Semesta Link */}
+        <a
+          href="https://semesta.oganilirkab.go.id/"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Buka Semesta"
+          className="sidebar-bottom flex items-center justify-center gap-2 px-3 py-2 rounded-2xl bg-white/10 backdrop-blur-sm text-white/70 hover:bg-white/20 hover:text-white transition-colors text-xs font-medium"
+        >
+          <FiExternalLink className="text-sm shrink-0" />
+          <span className="sidebar-text">Semesta Ogan Ilir</span>
+        </a>
+
+        {/* Powered by + Version */}
         <div className="sidebar-bottom p-3 rounded-2xl bg-white/10 backdrop-blur-sm text-center">
           <p className="sidebar-text text-[10px] text-white/60">Powered by</p>
           <p className="sidebar-text text-xs font-semibold text-white/90 mt-0.5">
-            Diskominfo Kab. Ogan Ilir
+            {APP_DEVELOPER}
           </p>
+          <p className="sidebar-text text-[10px] text-white/40 mt-1">v{APP_VERSION}</p>
         </div>
       </div>
     </aside>

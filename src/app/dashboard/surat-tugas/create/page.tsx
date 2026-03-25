@@ -161,6 +161,7 @@ export default function SuratTugasFormPage() {
     const [instances, setInstances] = useState<Instance[]>([]);
     const [instancesLoading, setInstancesLoading] = useState(false);
     const [selectedPenandatanganInstance, setSelectedPenandatanganInstance] = useState<SelectOption | null>(null);
+    const isSuperAdmin = user?.role?.slug === 'super-admin';
 
     // Penandatangan search
     const [showPenandatanganModal, setShowPenandatanganModal] = useState(false);
@@ -203,6 +204,7 @@ export default function SuratTugasFormPage() {
                 }
 
                 setForm({
+                    instance_id: st.instance_id ?? null,
                     klasifikasi_id: st.klasifikasi_id,
                     kategori_id: st.kategori_id ?? null,
                     nomor_surat: nomorSuratInput,

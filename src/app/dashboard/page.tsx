@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
   const yearOptions = [];
   const currentYear = new Date().getFullYear();
-  for (let y = currentYear; y >= currentYear - 5; y--) yearOptions.push(y);
+  for (let y = currentYear; y >= 2025; y--) yearOptions.push(y);
 
   // ─── Derived narrative helpers ─────────────────
   const totalST = s?.tahun_ini.total_st ?? 0;
@@ -222,50 +222,50 @@ export default function DashboardPage() {
         {loading
           ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
           : ([
-              {
-                title: 'Surat Tugas Diterbitkan',
-                subtitle: `Sepanjang tahun ${year}`,
-                value: totalST,
-                icon: FiFileText,
-                color: 'from-bubblegum-400 to-bubblegum-600',
-                shadow: 'shadow-bubblegum-300/40',
-              },
-              {
-                title: 'SPD Diterbitkan',
-                subtitle: 'Mengikuti ST yang sudah ditandatangani',
-                value: totalSPD,
-                icon: FiNavigation,
-                color: 'from-grape-400 to-grape-600',
-                shadow: 'shadow-grape-300/40',
-              },
-              {
-                title: 'Ditandatangani Pimpinan',
-                subtitle: `${signRate}% dari total Surat Tugas`,
-                value: totalSigned,
-                icon: FiCheckCircle,
-                color: 'from-mint-400 to-mint-500',
-                shadow: 'shadow-mint-300/40',
-              },
-              {
-                title: 'Menunggu Tanda Tangan',
-                subtitle: 'ST sudah dikirim, belum ditandatangani',
-                value: waiting,
-                icon: FiClock,
-                color: 'from-candy-400 to-candy-600',
-                shadow: 'shadow-candy-300/40',
-              },
-            ]).map((card, i) => (
-              <div key={i} className={`glass-card rounded-3xl p-5 hover:scale-[1.03] transition-all duration-300 ${card.shadow}`}>
-                <div className="flex items-center justify-between mb-3">
-                  <div className={`w-12 h-12 rounded-2xl bg-linear-to-br ${card.color} flex items-center justify-center shadow-lg ${card.shadow}`}>
-                    <card.icon className="text-white text-xl" />
-                  </div>
+            {
+              title: 'Surat Tugas Diterbitkan',
+              subtitle: `Sepanjang tahun ${year}`,
+              value: totalST,
+              icon: FiFileText,
+              color: 'from-bubblegum-400 to-bubblegum-600',
+              shadow: 'shadow-bubblegum-300/40',
+            },
+            {
+              title: 'SPD Diterbitkan',
+              subtitle: 'Mengikuti ST yang sudah ditandatangani',
+              value: totalSPD,
+              icon: FiNavigation,
+              color: 'from-grape-400 to-grape-600',
+              shadow: 'shadow-grape-300/40',
+            },
+            {
+              title: 'Ditandatangani Pimpinan',
+              subtitle: `${signRate}% dari total Surat Tugas`,
+              value: totalSigned,
+              icon: FiCheckCircle,
+              color: 'from-mint-400 to-mint-500',
+              shadow: 'shadow-mint-300/40',
+            },
+            {
+              title: 'Menunggu Tanda Tangan',
+              subtitle: 'ST sudah dikirim, belum ditandatangani',
+              value: waiting,
+              icon: FiClock,
+              color: 'from-candy-400 to-candy-600',
+              shadow: 'shadow-candy-300/40',
+            },
+          ]).map((card, i) => (
+            <div key={i} className={`glass-card rounded-3xl p-5 hover:scale-[1.03] transition-all duration-300 ${card.shadow}`}>
+              <div className="flex items-center justify-between mb-3">
+                <div className={`w-12 h-12 rounded-2xl bg-linear-to-br ${card.color} flex items-center justify-center shadow-lg ${card.shadow}`}>
+                  <card.icon className="text-white text-xl" />
                 </div>
-                <p className="text-3xl font-bold text-bubblegum-800">{card.value}</p>
-                <p className="text-sm font-medium text-bubblegum-700 mt-1">{card.title}</p>
-                <p className="text-[11px] text-bubblegum-400 mt-0.5 leading-tight">{card.subtitle}</p>
               </div>
-            ))}
+              <p className="text-3xl font-bold text-bubblegum-800">{card.value}</p>
+              <p className="text-sm font-medium text-bubblegum-700 mt-1">{card.title}</p>
+              <p className="text-[11px] text-bubblegum-400 mt-0.5 leading-tight">{card.subtitle}</p>
+            </div>
+          ))}
       </div>
 
       {/* ═══════════════════════════════════════════════
@@ -313,28 +313,28 @@ export default function DashboardPage() {
           {loading
             ? Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
             : ([
-                { title: 'SPD Bulan Ini', subtitle: `Diterbitkan di bulan ${bulanIni}`, value: spdBulanIni, icon: FiCalendar, color: 'from-bubblegum-400 to-bubblegum-600', shadow: 'shadow-bubblegum-300/40', comingSoon: false },
-                { title: 'Perjalanan Dinas Aktif', subtitle: 'Sedang dalam perjalanan (belum kembali)', value: spdActive, icon: FiActivity, color: 'from-mint-400 to-mint-500', shadow: 'shadow-mint-300/40', comingSoon: false },
-                { title: 'ST Bulan Ini', subtitle: `Surat Tugas dibuat di ${bulanIni}`, value: stBulanIni, icon: FiFileText, color: 'from-grape-400 to-grape-600', shadow: 'shadow-grape-300/40', comingSoon: false },
-                { title: 'Total Anggaran', subtitle: 'Fitur dalam pengembangan', value: null, icon: FiDollarSign, color: 'from-candy-400 to-candy-600', shadow: 'shadow-candy-300/40', comingSoon: true },
-                { title: 'Realisasi Anggaran', subtitle: 'Fitur dalam pengembangan', value: null, icon: FiPieChart, color: 'from-grape-500 to-bubblegum-500', shadow: 'shadow-grape-300/40', comingSoon: true },
-              ]).map((card, i) => (
-                <div key={i} className={`relative glass-card rounded-2xl p-5 hover:scale-[1.03] transition-all duration-300 ${card.shadow} ${card.comingSoon ? 'opacity-60' : ''}`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${card.color} flex items-center justify-center shadow-lg ${card.shadow}`}>
-                      <card.icon className="text-white text-lg" />
-                    </div>
-                    {card.comingSoon && (
-                      <span className="px-2 py-0.5 rounded-full bg-bubblegum-100 text-bubblegum-500 text-[10px] font-bold uppercase tracking-wider">
-                        Coming Soon
-                      </span>
-                    )}
+              { title: 'SPD Bulan Ini', subtitle: `Diterbitkan di bulan ${bulanIni}`, value: spdBulanIni, icon: FiCalendar, color: 'from-bubblegum-400 to-bubblegum-600', shadow: 'shadow-bubblegum-300/40', comingSoon: false },
+              { title: 'Perjalanan Dinas Aktif', subtitle: 'Sedang dalam perjalanan (belum kembali)', value: spdActive, icon: FiActivity, color: 'from-mint-400 to-mint-500', shadow: 'shadow-mint-300/40', comingSoon: false },
+              { title: 'ST Bulan Ini', subtitle: `Surat Tugas dibuat di ${bulanIni}`, value: stBulanIni, icon: FiFileText, color: 'from-grape-400 to-grape-600', shadow: 'shadow-grape-300/40', comingSoon: false },
+              { title: 'Total Anggaran', subtitle: 'Fitur dalam pengembangan', value: null, icon: FiDollarSign, color: 'from-candy-400 to-candy-600', shadow: 'shadow-candy-300/40', comingSoon: true },
+              { title: 'Realisasi Anggaran', subtitle: 'Fitur dalam pengembangan', value: null, icon: FiPieChart, color: 'from-grape-500 to-bubblegum-500', shadow: 'shadow-grape-300/40', comingSoon: true },
+            ]).map((card, i) => (
+              <div key={i} className={`relative glass-card rounded-2xl p-5 hover:scale-[1.03] transition-all duration-300 ${card.shadow} ${card.comingSoon ? 'opacity-60' : ''}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${card.color} flex items-center justify-center shadow-lg ${card.shadow}`}>
+                    <card.icon className="text-white text-lg" />
                   </div>
-                  <p className="text-2xl font-bold text-bubblegum-800">{card.comingSoon ? '—' : (card.value ?? 0)}</p>
-                  <p className="text-xs font-medium text-bubblegum-700 mt-1">{card.title}</p>
-                  <p className="text-[10px] text-bubblegum-400 mt-0.5 leading-tight">{card.subtitle}</p>
+                  {card.comingSoon && (
+                    <span className="px-2 py-0.5 rounded-full bg-bubblegum-100 text-bubblegum-500 text-[10px] font-bold uppercase tracking-wider">
+                      Coming Soon
+                    </span>
+                  )}
                 </div>
-              ))}
+                <p className="text-2xl font-bold text-bubblegum-800">{card.comingSoon ? '—' : (card.value ?? 0)}</p>
+                <p className="text-xs font-medium text-bubblegum-700 mt-1">{card.title}</p>
+                <p className="text-[10px] text-bubblegum-400 mt-0.5 leading-tight">{card.subtitle}</p>
+              </div>
+            ))}
         </div>
       </div>
 
@@ -461,22 +461,22 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="animate-pulse rounded-2xl bg-bubblegum-50 p-4"><div className="h-6 w-10 bg-bubblegum-200 rounded mb-1" /><div className="h-3 w-20 bg-bubblegum-100 rounded" /></div>
-              ))
+              <div key={i} className="animate-pulse rounded-2xl bg-bubblegum-50 p-4"><div className="h-6 w-10 bg-bubblegum-200 rounded mb-1" /><div className="h-3 w-20 bg-bubblegum-100 rounded" /></div>
+            ))
             : ([
-                { label: 'ST Dibuat', value: stBulanIni, desc: 'Surat Tugas baru dibuat' },
-                { label: 'SPD Diterbitkan', value: spdBulanIni, desc: 'SPD diterbitkan bulan ini' },
-                { label: 'Masih Draft', value: draftBulan, desc: 'ST belum dikirim ke pimpinan' },
-                { label: 'Menunggu TTD', value: waitBulan, desc: 'ST sudah dikirim, belum ditandatangani' },
-                { label: 'Ditandatangani', value: totalSignedBulan, desc: 'ST disetujui pimpinan (termasuk selesai)' },
-                { label: 'Ditolak', value: rejectedBulan, desc: 'ST ditolak, perlu revisi' },
-              ]).map((c, i) => (
-                <div key={i} className="rounded-2xl bg-bubblegum-gradient-soft border border-bubblegum-100 p-4 text-center">
-                  <p className="text-2xl font-bold text-bubblegum-800">{c.value ?? 0}</p>
-                  <p className="text-xs font-medium text-bubblegum-600 mt-1">{c.label}</p>
-                  <p className="text-[10px] text-bubblegum-400 mt-0.5 leading-tight">{c.desc}</p>
-                </div>
-              ))}
+              { label: 'ST Dibuat', value: stBulanIni, desc: 'Surat Tugas baru dibuat' },
+              { label: 'SPD Diterbitkan', value: spdBulanIni, desc: 'SPD diterbitkan bulan ini' },
+              { label: 'Masih Draft', value: draftBulan, desc: 'ST belum dikirim ke pimpinan' },
+              { label: 'Menunggu TTD', value: waitBulan, desc: 'ST sudah dikirim, belum ditandatangani' },
+              { label: 'Ditandatangani', value: totalSignedBulan, desc: 'ST disetujui pimpinan (termasuk selesai)' },
+              { label: 'Ditolak', value: rejectedBulan, desc: 'ST ditolak, perlu revisi' },
+            ]).map((c, i) => (
+              <div key={i} className="rounded-2xl bg-bubblegum-gradient-soft border border-bubblegum-100 p-4 text-center">
+                <p className="text-2xl font-bold text-bubblegum-800">{c.value ?? 0}</p>
+                <p className="text-xs font-medium text-bubblegum-600 mt-1">{c.label}</p>
+                <p className="text-[10px] text-bubblegum-400 mt-0.5 leading-tight">{c.desc}</p>
+              </div>
+            ))}
         </div>
 
         {/* Narrative for month */}
@@ -633,7 +633,8 @@ export default function DashboardPage() {
               <FiMapPin /> Tujuan Perjalanan Dinas Terpopuler
             </h3>
             <p className="text-xs text-bubblegum-400 mb-4">
-              Provinsi dan kabupaten/kota yang paling sering menjadi tujuan perjalanan dinas.
+              Provinsi, kabupaten/kota, dan kecamatan yang paling sering menjadi tujuan perjalanan dinas.
+              <span className="italic"> (Kab. Ogan Ilir tidak ditampilkan karena termasuk dalam kota)</span>
             </p>
             <div className="space-y-4">
               {/* Provinsi */}
@@ -669,6 +670,23 @@ export default function DashboardPage() {
                   <p className="text-xs text-bubblegum-400">Belum ada data tujuan kabupaten/kota</p>
                 )}
               </div>
+              {/* Kecamatan */}
+              {data?.top_kecamatan && data.top_kecamatan.length > 0 && (
+                <>
+                  <hr className="border-bubblegum-100" />
+                  <div>
+                    <h4 className="text-sm font-semibold text-bubblegum-600 mb-2">Top 5 Kecamatan Tujuan</h4>
+                    <div className="space-y-2">
+                      {data.top_kecamatan.slice(0, 5).map((kec, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <span className="text-sm text-bubblegum-700">{kec.tujuan_kecamatan_nama}</span>
+                          <ProgressBadge value={kec.total} max={data.top_kecamatan[0].total} color="mint" label="perjalanan" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

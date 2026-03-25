@@ -210,6 +210,7 @@ export interface SuratTugas {
 }
 
 export interface SuratTugasFormData {
+  instance_id?: number | null;
   klasifikasi_id: number | null;
   kategori_id: number | null;
   nomor_surat: string;
@@ -377,6 +378,12 @@ export interface TopKabupatenItem {
   total: number;
 }
 
+export interface TopKecamatanItem {
+  tujuan_kecamatan_id: string;
+  tujuan_kecamatan_nama: string;
+  total: number;
+}
+
 export interface ChartKlasifikasiItem {
   kode: string;
   nama: string;
@@ -438,6 +445,7 @@ export interface DashboardData {
   top_pegawai: TopPegawaiItem[];
   top_provinsi: TopProvinsiItem[];
   top_kabupaten: TopKabupatenItem[];
+  top_kecamatan: TopKecamatanItem[];
   chart_klasifikasi: ChartKlasifikasiItem[];
   chart_alat_angkut: ChartAlatAngkutItem[];
   top_opd_perjalanan: TopOpdPerjalananItem[];

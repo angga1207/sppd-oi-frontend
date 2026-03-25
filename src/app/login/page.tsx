@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { FiUser, FiLock, FiLogIn, FiEye, FiEyeOff, FiFileText, FiMapPin, FiSend } from 'react-icons/fi';
+import { FiUser, FiLock, FiLogIn, FiEye, FiEyeOff, FiFileText, FiMapPin, FiSend, FiExternalLink, FiAlertTriangle, FiShield } from 'react-icons/fi';
+import { APP_VERSION } from '@/lib/version';
+import api from '@/lib/api';
 
 export default function LoginPage() {
     const router = useRouter();
-    const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+    const { isAuthenticated, isLoading: authLoading } = useAuth();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -16,25 +18,102 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
+    // Captcha state
+    const [requiresCaptcha, setRequiresCaptcha] = useState(false);
+    const [captchaQuestion, setCaptchaQuestion] = useState('');
+    const [captchaToken, setCaptchaToken] = useState('');
+    const [captchaAnswer, setCaptchaAnswer] = useState('');
+    const [attempts, setAttempts] = useState(0);
+
+    // Block state
+    const [isBlocked, setIsBlocked] = useState(false);
+    const [blockedUntil, setBlockedUntil] = useState<string | null>(null);
+    const [countdown, setCountdown] = useState(0);
+
     useEffect(() => {
         if (!authLoading && isAuthenticated) {
             router.replace('/dashboard');
         }
     }, [isAuthenticated, authLoading, router]);
 
+    // Countdown timer for block
+    useEffect(() => {
+        if (countdown <= 0) {
+            if (isBlocked) {
+                setIsBlocked(false);
+                setBlockedUntil(null);
+                setError('');
+            }
+            return;
+        }
+        const timer = setTimeout(() => setCountdown((c) => c - 1), 1000);
+        return () => clearTimeout(timer);
+    }, [countdown, isBlocked]);
+
+    const formatCountdown = useCallback((seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}:${s.toString().padStart(2, '0')}`;
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
         setIsLoading(true);
 
-        const result = await login(username, password);
-        if (result.success) {
-            router.push('/dashboard');
-        } else {
-            setError(result.message);
-        }
+        try {
+            const payload: Record<string, string> = { username, password };
+            if (requiresCaptcha && captchaAnswer) {
+                payload.captcha_answer = captchaAnswer;
+                payload.captcha_token = captchaToken;
+            }
 
-        setIsLoading(false);
+            const response = await api.post('/auth/login', payload);
+
+            if (response.data.success) {
+                const { user: userData, token: authToken } = response.data.data;
+                // Use the login from AuthContext to handle state
+                localStorage.setItem('auth_token', authToken);
+                localStorage.setItem('auth_user', JSON.stringify(userData));
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            setError(response.data.message || 'Login gagal');
+        } catch (err: unknown) {
+            const error = err as { response?: { status?: number; data?: {
+                message?: string;
+                blocked?: boolean;
+                blocked_until?: string;
+                retry_after?: number;
+                requires_captcha?: boolean;
+                captcha?: { question: string; token: string };
+                attempts?: number;
+            } } };
+
+            const data = error.response?.data;
+
+            if (data?.blocked) {
+                setIsBlocked(true);
+                setBlockedUntil(data.blocked_until || null);
+                setCountdown(data.retry_after || 300);
+                setError(data.message || 'Akun diblokir.');
+                setRequiresCaptcha(false);
+                setCaptchaAnswer('');
+            } else if (data?.requires_captcha) {
+                setRequiresCaptcha(true);
+                setCaptchaQuestion(data.captcha?.question || '');
+                setCaptchaToken(data.captcha?.token || '');
+                setCaptchaAnswer('');
+                setError(data.message || 'Captcha diperlukan.');
+                if (data.attempts) setAttempts(data.attempts);
+            } else {
+                setError(data?.message || 'Terjadi kesalahan saat login');
+                if (data?.attempts) setAttempts(data.attempts);
+            }
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     if (authLoading) {
@@ -121,9 +200,12 @@ export default function LoginPage() {
                 {/* Bottom — Footer */}
                 <div className="relative z-10">
                     <div className="h-px bg-white/10 mb-4" />
-                    <p className="text-xs text-white/40">
-                        &copy; {new Date().getFullYear()} Pemerintah Kabupaten Ogan Ilir &middot; Semua hak dilindungi
-                    </p>
+                    <div className="flex items-center justify-between">
+                        <p className="text-xs text-white/40">
+                            &copy; {new Date().getFullYear()} Pemerintah Kabupaten Ogan Ilir &middot; Semua hak dilindungi
+                        </p>
+                        <p className="text-xs text-white/30">v{APP_VERSION}</p>
+                    </div>
                 </div>
             </div>
 
@@ -150,9 +232,27 @@ export default function LoginPage() {
                     </div>
 
                     {/* Error Message */}
-                    {error && (
+                    {error && !isBlocked && (
                         <div className="mb-5 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-600 text-sm text-center animate-bubble-pop">
                             {error}
+                            {attempts > 0 && attempts < 10 && (
+                                <p className="text-xs mt-1 text-red-400">
+                                    Percobaan gagal: {attempts}/10
+                                </p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Blocked Message */}
+                    {isBlocked && (
+                        <div className="mb-5 p-5 rounded-2xl bg-red-50 border-2 border-red-300 text-center animate-bubble-pop">
+                            <FiAlertTriangle className="text-3xl text-red-500 mx-auto mb-2" />
+                            <p className="text-sm font-semibold text-red-700">Akun Diblokir Sementara</p>
+                            <p className="text-xs text-red-500 mt-1">Terlalu banyak percobaan login gagal</p>
+                            <div className="mt-3 py-2 px-4 rounded-xl bg-red-100 inline-block">
+                                <span className="text-2xl font-bold text-red-600 font-mono">{formatCountdown(countdown)}</span>
+                            </div>
+                            <p className="text-xs text-red-400 mt-2">Silakan coba lagi setelah waktu habis</p>
                         </div>
                     )}
 
@@ -203,10 +303,34 @@ export default function LoginPage() {
                             </div>
                         </div>
 
+                        {/* Captcha */}
+                        {requiresCaptcha && !isBlocked && (
+                            <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-200">
+                                <div className="flex items-center gap-2 mb-3">
+                                    <FiShield className="text-amber-600" />
+                                    <span className="text-sm font-semibold text-amber-700">Verifikasi Keamanan</span>
+                                </div>
+                                <p className="text-sm text-amber-600 mb-3">Berapa hasil dari:</p>
+                                <div className="text-center py-3 px-4 rounded-xl bg-white border border-amber-200 mb-3">
+                                    <span className="text-2xl font-bold text-amber-800 font-mono">{captchaQuestion}</span>
+                                </div>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={captchaAnswer}
+                                    onChange={(e) => setCaptchaAnswer(e.target.value)}
+                                    placeholder="Masukkan jawaban"
+                                    className="w-full px-4 py-3 rounded-xl border-2 border-amber-200 bg-white text-amber-800 placeholder-amber-300 focus:border-amber-500 focus:ring-4 focus:ring-amber-100 outline-none transition-all text-center text-lg font-semibold"
+                                    required
+                                    autoComplete="off"
+                                />
+                            </div>
+                        )}
+
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isLoading || isBlocked}
                             className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-bubblegum-800 to-grape-700 text-white font-semibold text-base shadow-lg shadow-bubblegum-300/40 hover:shadow-xl hover:shadow-bubblegum-400/40 hover:from-bubblegum-700 hover:to-grape-600 active:scale-[0.98] transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
                         >
                             {isLoading ? (
@@ -225,11 +349,17 @@ export default function LoginPage() {
 
                     {/* Footer */}
                     <div className="mt-8 text-center space-y-2">
-                        <p className="text-xs text-bubblegum-400">
+                        <a
+                            href="https://semesta.oganilirkab.go.id/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs text-bubblegum-400 hover:text-bubblegum-600 transition-colors"
+                        >
+                            <FiExternalLink className="text-[11px]" />
                             Autentikasi menggunakan Sistem Semesta
-                        </p>
+                        </a>
                         <p className="text-xs text-bubblegum-300 lg:hidden">
-                            &copy; {new Date().getFullYear()} Pemerintah Kabupaten Ogan Ilir
+                            &copy; {new Date().getFullYear()} Pemerintah Kabupaten Ogan Ilir &middot; v{APP_VERSION}
                         </p>
                     </div>
                 </div>

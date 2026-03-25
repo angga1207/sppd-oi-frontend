@@ -11,6 +11,8 @@ import {
   FiSearch, FiChevronLeft, FiChevronRight,
 } from 'react-icons/fi';
 import api from '@/lib/api';
+import SearchableSelect from '@/components/SearchableSelect';
+import type { SelectOption } from '@/components/SearchableSelect';
 import type {
   ReportData, ReportInstanceItem, SuratTugas,
   PaginatedResponse, ActiveTripItem,
@@ -266,13 +268,15 @@ export default function LaporanPage() {
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             {/* Year selector */}
-            <select
-              value={year}
-              onChange={(e) => setYear(Number(e.target.value))}
-              className="rounded-2xl border border-bubblegum-200 bg-white px-4 py-2.5 text-sm text-bubblegum-800 focus:border-bubblegum-500 focus:ring-2 focus:ring-bubblegum-200 outline-none shadow-sm"
-            >
-              {yearOptions.map((y) => <option key={y} value={y}>Tahun {y}</option>)}
-            </select>
+            <div className="w-44">
+              <SearchableSelect
+                options={yearOptions.map((y) => ({ value: y, label: `Tahun ${y}` }))}
+                value={{ value: year, label: `Tahun ${year}` }}
+                onChange={(opt) => { if (opt) setYear(Number(opt.value)); }}
+                placeholder="Tahun"
+                isClearable={false}
+              />
+            </div>
             {/* Filter toggle */}
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
@@ -298,30 +302,41 @@ export default function LaporanPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="text-xs font-semibold text-bubblegum-500 mb-1.5 block">Bulan</label>
-                <select value={month} onChange={(e) => setMonth(e.target.value)} className="w-full rounded-xl border border-bubblegum-200 bg-white px-3 py-2.5 text-sm text-bubblegum-800 focus:border-bubblegum-500 focus:ring-1 focus:ring-bubblegum-300 outline-none">
-                  {MONTHS_ID.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
-                </select>
+                <SearchableSelect
+                  options={MONTHS_ID.map((m) => ({ value: m.value, label: m.label })) as SelectOption[]}
+                  value={month ? (MONTHS_ID.find((m) => m.value === month) ? { value: month, label: MONTHS_ID.find((m) => m.value === month)!.label } : null) : null}
+                  onChange={(opt) => setMonth(opt ? String(opt.value) : '')}
+                  placeholder="Semua Bulan"
+                />
               </div>
               {instances.length > 1 && (
                 <div>
                   <label className="text-xs font-semibold text-bubblegum-500 mb-1.5 block">OPD / Instansi</label>
-                  <select value={instanceId} onChange={(e) => setInstanceId(e.target.value)} className="w-full rounded-xl border border-bubblegum-200 bg-white px-3 py-2.5 text-sm text-bubblegum-800 focus:border-bubblegum-500 focus:ring-1 focus:ring-bubblegum-300 outline-none">
-                    <option value="">Semua OPD</option>
-                    {instances.map((i) => <option key={i.id} value={i.id}>{i.alias || i.name}</option>)}
-                  </select>
+                  <SearchableSelect
+                    options={instances.map((i) => ({ value: String(i.id), label: i.name }))}
+                    value={instanceId ? (instances.find((i) => String(i.id) === instanceId) ? { value: instanceId, label: instances.find((i) => String(i.id) === instanceId)!.name } : null) : null}
+                    onChange={(opt) => setInstanceId(opt ? String(opt.value) : '')}
+                    placeholder="Semua OPD"
+                  />
                 </div>
               )}
               <div>
                 <label className="text-xs font-semibold text-bubblegum-500 mb-1.5 block">Jenis Perjalanan</label>
-                <select value={jenisPerjalanan} onChange={(e) => setJenisPerjalanan(e.target.value)} className="w-full rounded-xl border border-bubblegum-200 bg-white px-3 py-2.5 text-sm text-bubblegum-800 focus:border-bubblegum-500 focus:ring-1 focus:ring-bubblegum-300 outline-none">
-                  {JENIS_OPTIONS.map((j) => <option key={j.value} value={j.value}>{j.label}</option>)}
-                </select>
+                <SearchableSelect
+                  options={JENIS_OPTIONS.filter((j) => j.value !== '').map((j) => ({ value: j.value, label: j.label })) as SelectOption[]}
+                  value={jenisPerjalanan ? (JENIS_OPTIONS.find((j) => j.value === jenisPerjalanan) ? { value: jenisPerjalanan, label: JENIS_OPTIONS.find((j) => j.value === jenisPerjalanan)!.label } : null) : null}
+                  onChange={(opt) => setJenisPerjalanan(opt ? String(opt.value) : '')}
+                  placeholder="Semua Jenis"
+                />
               </div>
               <div>
                 <label className="text-xs font-semibold text-bubblegum-500 mb-1.5 block">Status</label>
-                <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full rounded-xl border border-bubblegum-200 bg-white px-3 py-2.5 text-sm text-bubblegum-800 focus:border-bubblegum-500 focus:ring-1 focus:ring-bubblegum-300 outline-none">
-                  {STATUS_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
-                </select>
+                <SearchableSelect
+                  options={STATUS_OPTIONS.filter((s) => s.value !== '').map((s) => ({ value: s.value, label: s.label })) as SelectOption[]}
+                  value={status ? (STATUS_OPTIONS.find((s) => s.value === status) ? { value: status, label: STATUS_OPTIONS.find((s) => s.value === status)!.label } : null) : null}
+                  onChange={(opt) => setStatus(opt ? String(opt.value) : '')}
+                  placeholder="Semua Status"
+                />
               </div>
             </div>
             {activeFilterCount > 0 && (
@@ -471,7 +486,7 @@ function OverviewTab({ data, loading, year }: { data: ReportData | null; loading
                           </span>
                         )}
                         {trip.instance && (
-                          <span className="flex items-center gap-1"><FiUsers className="text-[10px]" /> {trip.instance.alias || trip.instance.name}</span>
+                          <span className="flex items-center gap-1"><FiUsers className="text-[10px]" /> {trip.instance.name}</span>
                         )}
                       </div>
                       {trip.pegawai && trip.pegawai.length > 0 && (
@@ -1022,7 +1037,7 @@ function DetailTableTab({
                     <td className="py-3 px-3 text-bubblegum-400">{(data.current_page - 1) * data.per_page + i + 1}</td>
                     <td className="py-3 px-3">
                       <p className="font-medium text-bubblegum-800">{st.nomor_surat || '-'}</p>
-                      {st.instance && <p className="text-xs text-bubblegum-400 truncate max-w-50">{st.instance.alias || st.instance.name}</p>}
+                      {st.instance && <p className="text-xs text-bubblegum-400 truncate max-w-50">{st.instance.name}</p>}
                     </td>
                     <td className="py-3 px-3 text-bubblegum-600 whitespace-nowrap">{st.tanggal_dikeluarkan ? new Date(st.tanggal_dikeluarkan).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-'}</td>
                     <td className="py-3 px-3">

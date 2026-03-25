@@ -1,0 +1,22 @@
+{
+  "name": "e-SPD Ogan Ilir",
+  "short_name": "e-SPD OI",
+  "description": "Sistem Surat Perjalanan Dinas Elektronik Kabupaten Ogan Ilir",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e84393",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo-oi.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo-oi.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -4,8 +4,10 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import api from '@/lib/api';
 import type { SuratTugas, SuratTugasStatus, PaginatedResponse } from '@/lib/types';
-import { FiPlus, FiSearch, FiEye, FiEdit2, FiTrash2, FiSend, FiFilter, FiCalendar, FiFileText, FiCheckCircle, FiXCircle, FiFlag } from 'react-icons/fi'; import type { ReactNode } from 'react';
+import { FiPlus, FiSearch, FiEye, FiEdit2, FiTrash2, FiSend, FiFileText, FiCheckCircle, FiXCircle, FiFlag } from 'react-icons/fi'; import type { ReactNode } from 'react';
 import { swalConfirm, swalSuccess, swalError } from '@/lib/swal';
+import SearchableSelect from '@/components/SearchableSelect';
+import type { SelectOption } from '@/components/SearchableSelect';
 
 const statusConfig: Record<SuratTugasStatus, { label: string; color: string; icon: ReactNode }> = {
   draft: { label: 'Draft', color: 'bg-gray-100 text-gray-700', icon: <FiFileText /> },
@@ -37,6 +39,20 @@ function getYearOptions(): number[] {
     years.push(y);
   }
   return years;
+}
+
+const statusOptions: SelectOption[] = [
+  { value: 'draft', label: 'Draft' },
+  { value: 'dikirim', label: 'Menunggu Tandatangan' },
+  { value: 'ditandatangani', label: 'Ditandatangani' },
+  { value: 'ditolak', label: 'Ditolak' },
+  { value: 'selesai', label: 'Selesai' },
+];
+
+const monthOptions: SelectOption[] = MONTHS.map((m) => ({ value: m.value, label: m.label }));
+
+function getYearSelectOptions(): SelectOption[] {
+  return getYearOptions().map((y) => ({ value: String(y), label: String(y) }));
 }
 
 export default function SuratTugasListPage() {
@@ -158,53 +174,30 @@ export default function SuratTugasListPage() {
             className="w-full pl-11 pr-4 py-2.5 rounded-2xl border-2 border-bubblegum-200 bg-white/50 text-sm text-bubblegum-800 placeholder:text-bubblegum-300 focus:outline-none focus:border-bubblegum-400 transition-colors"
           />
         </div>
-        <div className="relative">
-          <FiFilter className="absolute left-3 top-1/2 -translate-y-1/2 text-bubblegum-400" />
-          <select
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value);
-              setPage(1);
-            }}
-            className="pl-9 pr-8 py-2.5 rounded-2xl border-2 border-bubblegum-200 bg-white/50 text-sm text-bubblegum-700 focus:outline-none focus:border-bubblegum-400 transition-colors appearance-none cursor-pointer"
-          >
-            <option value="">Semua Status</option>
-            <option value="draft">Draft</option>
-            <option value="dikirim">Menunggu Tandatangan</option>
-            <option value="ditandatangani">Ditandatangani</option>
-            <option value="ditolak">Ditolak</option>
-            <option value="selesai">Selesai</option>
-          </select>
+        <div className="w-full sm:w-48">
+          <SearchableSelect
+            options={statusOptions}
+            value={statusFilter ? statusOptions.find(o => o.value === statusFilter) || null : null}
+            onChange={(opt) => { setStatusFilter(opt ? String(opt.value) : ''); setPage(1); }}
+            placeholder="Semua Status"
+          />
         </div>
-        <div className="relative">
-          <FiCalendar className="absolute left-3 top-1/2 -translate-y-1/2 text-bubblegum-400" />
-          <select
-            value={yearFilter}
-            onChange={(e) => {
-              setYearFilter(e.target.value);
-              setPage(1);
-            }}
-            className="pl-9 pr-8 py-2.5 rounded-2xl border-2 border-bubblegum-200 bg-white/50 text-sm text-bubblegum-700 focus:outline-none focus:border-bubblegum-400 transition-colors appearance-none cursor-pointer"
-          >
-            {getYearOptions().map((y) => (
-              <option key={y} value={String(y)}>{y}</option>
-            ))}
-          </select>
+        <div className="w-full sm:w-36">
+          <SearchableSelect
+            options={getYearSelectOptions()}
+            value={yearFilter ? { value: yearFilter, label: yearFilter } : null}
+            onChange={(opt) => { setYearFilter(opt ? String(opt.value) : ''); setPage(1); }}
+            placeholder="Tahun"
+            isClearable={false}
+          />
         </div>
-        <div className="relative">
-          <select
-            value={monthFilter}
-            onChange={(e) => {
-              setMonthFilter(e.target.value);
-              setPage(1);
-            }}
-            className="px-4 py-2.5 rounded-2xl border-2 border-bubblegum-200 bg-white/50 text-sm text-bubblegum-700 focus:outline-none focus:border-bubblegum-400 transition-colors appearance-none cursor-pointer"
-          >
-            <option value="">Semua Bulan</option>
-            {MONTHS.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
+        <div className="w-full sm:w-40">
+          <SearchableSelect
+            options={monthOptions}
+            value={monthFilter ? monthOptions.find(o => o.value === monthFilter) || null : null}
+            onChange={(opt) => { setMonthFilter(opt ? String(opt.value) : ''); setPage(1); }}
+            placeholder="Semua Bulan"
+          />
         </div>
       </div>
 
