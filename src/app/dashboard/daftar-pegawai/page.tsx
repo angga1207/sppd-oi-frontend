@@ -357,144 +357,158 @@ export default function DaftarPegawaiPage() {
                         </div>
                     </div>
 
-                    {/* Employee Table */}
-                    <div className="glass-card rounded-2xl border border-bubblegum-100 overflow-hidden">
-                        {empLoading ? (
-                            <div className="flex items-center justify-center py-16">
-                                <div className="flex flex-col items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full border-3 border-bubblegum-300 border-t-transparent animate-spin" />
-                                    <p className="text-sm text-bubblegum-400">Memuat data pegawai...</p>
-                                </div>
+                    {/* Employee Cards Grid */}
+                    {empLoading ? (
+                        <div className="flex items-center justify-center py-16">
+                            <div className="flex flex-col items-center gap-3">
+                                <div className="w-10 h-10 rounded-full border-3 border-bubblegum-300 border-t-transparent animate-spin" />
+                                <p className="text-sm text-bubblegum-400">Memuat data pegawai...</p>
                             </div>
-                        ) : employees.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16 text-bubblegum-400">
-                                <FiUsers className="text-4xl mb-3 opacity-30" />
-                                <p className="text-sm font-medium">Belum ada data pegawai</p>
-                                <p className="text-xs mt-1">Jalankan sync untuk menarik data dari Semesta</p>
-                            </div>
-                        ) : (
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-sm">
-                                    <thead>
-                                        <tr className="border-b border-bubblegum-100 bg-bubblegum-50/50">
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600">Pegawai</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600 hidden md:table-cell">NIP</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600 hidden lg:table-cell">Jabatan</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600 hidden xl:table-cell">OPD</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600 hidden sm:table-cell">Jenis</th>
-                                            <th className="text-left px-4 py-3 font-semibold text-bubblegum-600 hidden lg:table-cell">Gol.</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-bubblegum-50">
-                                        {employees.map((emp) => (
-                                            <tr
-                                                key={emp.id}
-                                                onClick={() => router.push(`/dashboard/pegawai/${emp.id}`)}
-                                                className="hover:bg-bubblegum-50/30 transition-colors cursor-pointer"
-                                            >
-                                                <td className="px-4 py-3">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-bubblegum-100 flex items-center justify-center shrink-0">
-                                                            {/* <FiUser className="text-bubblegum-500 text-sm" /> */}
-                                                            <img
-                                                                src={emp.foto_pegawai || '/logo-oi.png'}
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = '/logo-oi.png';
-                                                                }}
-                                                                alt={emp.nama_lengkap}
-                                                                className="w-8 h-8 p-1 rounded-2xl object-cover shadow-lg shadow-blue-200/50 shrink-0" />
-                                                        </div>
-                                                        <div className="min-w-0">
-                                                            <p className="font-medium text-bubblegum-800 truncate">{emp.nama_lengkap}</p>
-                                                            <p className="text-xs text-bubblegum-400 md:hidden">{emp.nip}</p>
-                                                        </div>
-                                                        {emp.kepala_skpd === 'Y' && (
-                                                            <span className="shrink-0 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700">
-                                                                Kepala
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-3 text-bubblegum-600 hidden md:table-cell font-mono text-xs">
-                                                    {emp.nip}
-                                                </td>
-                                                <td className="px-4 py-3 text-bubblegum-600 hidden lg:table-cell">
-                                                    <span className="line-clamp-1 text-xs">{emp.jabatan || '-'}</span>
-                                                </td>
-                                                <td className="px-4 py-3 hidden xl:table-cell">
-                                                    <span className="text-xs text-bubblegum-500 line-clamp-1">
-                                                        {emp.instance?.name || '-'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-3 hidden sm:table-cell">
+                        </div>
+                    ) : employees.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-16 text-bubblegum-400">
+                            <FiUsers className="text-4xl mb-3 opacity-30" />
+                            <p className="text-sm font-medium">Belum ada data pegawai</p>
+                            <p className="text-xs mt-1">Jalankan sync untuk menarik data dari Semesta</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                {employees.map((emp) => (
+                                    <div
+                                        key={emp.id}
+                                        onClick={() => router.push(`/dashboard/pegawai/${emp.id}`)}
+                                        className="glass-card rounded-2xl border border-bubblegum-100 p-4 hover:shadow-lg hover:shadow-bubblegum-100/50 hover:border-bubblegum-200 transition-all cursor-pointer group"
+                                    >
+                                        {/* Card Header - Photo & Name */}
+                                        <div className="flex items-start gap-3 mb-3">
+                                            <div className="w-20 h-20 rounded-xl bg-bubblegum-50 flex items-center justify-center shrink-0 overflow-hidden border-2 border-bubblegum-100 group-hover:border-bubblegum-200 transition-colors">
+                                                <img
+                                                    src={emp.foto_pegawai || '/logo-oi.png'}
+                                                    onError={(e) => {
+                                                        (e.target as HTMLImageElement).src = '/logo-oi.png';
+                                                    }}
+                                                    alt={emp.nama_lengkap}
+                                                    className="w-20 h-20 object-cover"
+                                                />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-semibold text-sm text-bubblegum-800 line-clamp-2 leading-tight group-hover:text-bubblegum-600 transition-colors">
+                                                    {emp.nama_lengkap}
+                                                </p>
+                                                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                                                     {emp.jenis_pegawai && (
-                                                        <span className={`inline-flex px-2 py-0.5 rounded-lg text-[11px] font-semibold ${emp.jenis_pegawai === 'PNS' ? 'bg-blue-100 text-blue-700' :
+                                                        <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-semibold ${emp.jenis_pegawai === 'PNS' ? 'bg-blue-100 text-blue-700' :
                                                             emp.jenis_pegawai === 'PPPK' ? 'bg-purple-100 text-purple-700' :
                                                                 'bg-gray-100 text-gray-600'
                                                             }`}>
                                                             {emp.jenis_pegawai}
                                                         </span>
                                                     )}
-                                                </td>
-                                                <td className="px-4 py-3 text-bubblegum-600 hidden lg:table-cell text-xs">
-                                                    {emp.golongan || '-'}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        )}
+                                                    {emp.kepala_skpd === 'Y' && (
+                                                        <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700">
+                                                            Kepala
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
 
-                        {/* Pagination */}
-                        {empLastPage > 1 && (
-                            <div className="flex items-center justify-between px-4 py-3 border-t border-bubblegum-100">
-                                <p className="text-xs text-bubblegum-400">
-                                    Halaman {empPage} dari {empLastPage} ({empTotal.toLocaleString()} pegawai)
-                                </p>
-                                <div className="flex items-center gap-1">
-                                    <button
-                                        onClick={() => fetchEmployees(empPage - 1)}
-                                        disabled={empPage <= 1}
-                                        className="p-2 rounded-xl text-bubblegum-400 hover:bg-bubblegum-50 disabled:opacity-30 transition-all"
-                                    >
-                                        <FiChevronLeft />
-                                    </button>
-                                    {Array.from({ length: Math.min(5, empLastPage) }, (_, i) => {
-                                        let page: number;
-                                        if (empLastPage <= 5) {
-                                            page = i + 1;
-                                        } else if (empPage <= 3) {
-                                            page = i + 1;
-                                        } else if (empPage >= empLastPage - 2) {
-                                            page = empLastPage - 4 + i;
-                                        } else {
-                                            page = empPage - 2 + i;
-                                        }
-                                        return (
-                                            <button
-                                                key={page}
-                                                onClick={() => fetchEmployees(page)}
-                                                className={`w-8 h-8 rounded-xl text-xs font-medium transition-all ${page === empPage
-                                                    ? 'bg-bubblegum-gradient text-white shadow-sm'
-                                                    : 'text-bubblegum-400 hover:bg-bubblegum-50'
-                                                    }`}
-                                            >
-                                                {page}
-                                            </button>
-                                        );
-                                    })}
-                                    <button
-                                        onClick={() => fetchEmployees(empPage + 1)}
-                                        disabled={empPage >= empLastPage}
-                                        className="p-2 rounded-xl text-bubblegum-400 hover:bg-bubblegum-50 disabled:opacity-30 transition-all"
-                                    >
-                                        <FiChevronRight />
-                                    </button>
-                                </div>
+                                        {/* Card Details */}
+                                        <div className="space-y-2 text-xs">
+                                            {/* NIP */}
+                                            <div className="flex items-center gap-2">
+                                                <FiHash className="text-bubblegum-300 shrink-0 text-sm" />
+                                                <span className="text-bubblegum-500 font-mono truncate">{emp.nip}</span>
+                                            </div>
+
+                                            {/* Jabatan */}
+                                            <div className="flex items-start gap-2">
+                                                <FiBriefcase className="text-bubblegum-300 shrink-0 text-sm mt-0.5" />
+                                                <span className="text-bubblegum-600 line-clamp-2 leading-relaxed">{emp.jabatan || '-'}</span>
+                                            </div>
+
+                                            {/* OPD */}
+                                            <div className="flex items-start gap-2">
+                                                <FiUsers className="text-bubblegum-300 shrink-0 text-sm mt-0.5" />
+                                                <span className="text-bubblegum-500 line-clamp-2 leading-relaxed">{emp.instance?.name || '-'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Card Footer */}
+                                        {(emp.golongan || emp.pangkat || emp.eselon) && (
+                                            <div className="mt-3 pt-3 border-t border-bubblegum-50 flex items-center gap-2 flex-wrap">
+                                                {emp.golongan && (
+                                                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-bubblegum-50 text-bubblegum-600">
+                                                        Gol. {emp.golongan}
+                                                    </span>
+                                                )}
+                                                {emp.pangkat && (
+                                                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-indigo-50 text-indigo-600 truncate max-w-35">
+                                                        {emp.pangkat}
+                                                    </span>
+                                                )}
+                                                {emp.eselon && (
+                                                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-teal-50 text-teal-600">
+                                                        Es. {emp.eselon}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        )}
-                    </div>
+
+                            {/* Pagination */}
+                            {empLastPage > 1 && (
+                                <div className="flex items-center justify-between mt-4">
+                                    <p className="text-xs text-bubblegum-400">
+                                        Halaman {empPage} dari {empLastPage} ({empTotal.toLocaleString()} pegawai)
+                                    </p>
+                                    <div className="flex items-center gap-1">
+                                        <button
+                                            onClick={() => fetchEmployees(empPage - 1)}
+                                            disabled={empPage <= 1}
+                                            className="p-2 rounded-xl text-bubblegum-400 hover:bg-bubblegum-50 disabled:opacity-30 transition-all"
+                                        >
+                                            <FiChevronLeft />
+                                        </button>
+                                        {Array.from({ length: Math.min(5, empLastPage) }, (_, i) => {
+                                            let page: number;
+                                            if (empLastPage <= 5) {
+                                                page = i + 1;
+                                            } else if (empPage <= 3) {
+                                                page = i + 1;
+                                            } else if (empPage >= empLastPage - 2) {
+                                                page = empLastPage - 4 + i;
+                                            } else {
+                                                page = empPage - 2 + i;
+                                            }
+                                            return (
+                                                <button
+                                                    key={page}
+                                                    onClick={() => fetchEmployees(page)}
+                                                    className={`w-8 h-8 rounded-xl text-xs font-medium transition-all ${page === empPage
+                                                        ? 'bg-bubblegum-gradient text-white shadow-sm'
+                                                        : 'text-bubblegum-400 hover:bg-bubblegum-50'
+                                                        }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            );
+                                        })}
+                                        <button
+                                            onClick={() => fetchEmployees(empPage + 1)}
+                                            disabled={empPage >= empLastPage}
+                                            className="p-2 rounded-xl text-bubblegum-400 hover:bg-bubblegum-50 disabled:opacity-30 transition-all"
+                                        >
+                                            <FiChevronRight />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </>
+                    )}
                 </>
             )}
 

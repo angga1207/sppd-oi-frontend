@@ -83,11 +83,11 @@ export default function SearchableSelect({
           minHeight: '44px',
           borderRadius: '16px',
           borderWidth: '2px',
-          borderColor: state.isFocused ? '#a855f7' : '#fbcfe8',
+          borderColor: state.isFocused ? '#4f46e5' : '#bfdbfe',
           backgroundColor: 'rgba(255,255,255,0.5)',
-          boxShadow: state.isFocused ? '0 0 0 3px rgba(168, 85, 247, 0.15)' : 'none',
+          boxShadow: state.isFocused ? '0 0 0 3px rgba(79, 70, 229, 0.15)' : 'none',
           '&:hover': {
-            borderColor: '#f472b6',
+            borderColor: '#60a5fa',
           },
           fontSize: '0.875rem',
           cursor: 'pointer',
@@ -96,8 +96,8 @@ export default function SearchableSelect({
           ...base,
           borderRadius: '16px',
           overflow: 'hidden',
-          border: '1px solid #fce7f3',
-          boxShadow: '0 10px 40px rgba(236, 72, 153, 0.15)',
+          border: '1px solid #dbeafe',
+          boxShadow: '0 10px 40px rgba(30, 58, 138, 0.12)',
           zIndex: 50,
         }),
         menuList: (base) => ({
@@ -115,10 +115,10 @@ export default function SearchableSelect({
           padding: '6px 12px',
           fontSize: '0.75rem',
           fontWeight: 700,
-          color: '#7c3aed',
+          color: '#4338ca',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
-          backgroundColor: '#faf5ff',
+          backgroundColor: '#eef2ff',
           borderRadius: '8px',
           marginBottom: '2px',
         }),
@@ -128,56 +128,56 @@ export default function SearchableSelect({
           padding: '10px 14px',
           cursor: 'pointer',
           backgroundColor: state.isSelected
-            ? '#ec4899'
+            ? '#1e40af'
             : state.isFocused
-            ? '#fdf2f8'
+            ? '#eff6ff'
             : 'transparent',
-          color: state.isSelected ? 'white' : '#9d174d',
+          color: state.isSelected ? 'white' : '#1e3a8a',
           fontSize: '0.875rem',
           '&:active': {
-            backgroundColor: '#fce7f3',
+            backgroundColor: '#dbeafe',
           },
         }),
         singleValue: (base) => ({
           ...base,
-          color: '#9d174d',
+          color: '#1e3a8a',
           fontSize: '0.875rem',
         }),
         placeholder: (base) => ({
           ...base,
-          color: '#f9a8d4',
+          color: '#93c5fd',
           fontSize: '0.875rem',
         }),
         input: (base) => ({
           ...base,
-          color: '#9d174d',
+          color: '#1e3a8a',
           fontSize: '0.875rem',
         }),
         indicatorSeparator: (base) => ({
           ...base,
-          backgroundColor: '#fbcfe8',
+          backgroundColor: '#bfdbfe',
         }),
         dropdownIndicator: (base, state) => ({
           ...base,
-          color: state.isFocused ? '#a855f7' : '#f9a8d4',
+          color: state.isFocused ? '#4f46e5' : '#93c5fd',
           '&:hover': {
-            color: '#ec4899',
+            color: '#2563eb',
           },
         }),
         clearIndicator: (base) => ({
           ...base,
-          color: '#f9a8d4',
+          color: '#93c5fd',
           '&:hover': {
-            color: '#ec4899',
+            color: '#2563eb',
           },
         }),
         loadingIndicator: (base) => ({
           ...base,
-          color: '#ec4899',
+          color: '#3b82f6',
         }),
         noOptionsMessage: (base) => ({
           ...base,
-          color: '#f9a8d4',
+          color: '#93c5fd',
           fontSize: '0.875rem',
         }),
         menuPortal: (base) => ({

@@ -62,6 +62,7 @@ export async function POST(
     const { path } = await params;
     const pathStr = path ? path.join('/') : '';
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
     const body = await request.json();
 
     const url = pathStr
@@ -74,6 +75,7 @@ export async function POST(
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: authHeader,
+        'X-User-Agent': userAgent,
       },
       body: JSON.stringify(body),
     });
@@ -97,6 +99,7 @@ export async function PUT(
     const { path } = await params;
     const pathStr = path ? path.join('/') : '';
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
     const body = await request.json();
 
     const response = await fetch(`${BACKEND_URL}/surat-tugas/${pathStr}`, {
@@ -105,6 +108,7 @@ export async function PUT(
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: authHeader,
+        'X-User-Agent': userAgent,
       },
       body: JSON.stringify(body),
     });
@@ -128,6 +132,7 @@ export async function DELETE(
     const { path } = await params;
     const pathStr = path ? path.join('/') : '';
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
 
     const response = await fetch(`${BACKEND_URL}/surat-tugas/${pathStr}`, {
       method: 'DELETE',
@@ -135,6 +140,7 @@ export async function DELETE(
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: authHeader,
+        'X-User-Agent': userAgent,
       },
     });
 

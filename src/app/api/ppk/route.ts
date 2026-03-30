@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
     const body = await request.json();
 
     const response = await fetch(`${BACKEND_URL}/ppk`, {
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: authHeader,
+        'X-User-Agent': userAgent,
       },
       body: JSON.stringify(body),
     });

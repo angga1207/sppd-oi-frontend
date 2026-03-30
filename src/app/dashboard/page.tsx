@@ -787,15 +787,15 @@ export default function DashboardPage() {
             <p className="text-sm font-semibold text-grape-700">SPD Saya</p>
             <p className="text-xs text-grape-400 mt-0.5">Lihat perjalanan dinas Anda</p>
           </Link>
-          <Link href="/dashboard/verifikasi" className="p-4 rounded-2xl bg-bubblegum-gradient-soft border-2 border-candy-200 hover:border-candy-400 hover:shadow-lg hover:shadow-candy-200/50 transition-all duration-300 text-left group">
-            <FiCheckCircle className="text-candy-500 text-xl mb-2 group-hover:scale-110 transition-transform" />
-            <p className="text-sm font-semibold text-candy-700">Verifikasi</p>
-            <p className="text-xs text-candy-400 mt-0.5">Tanda tangani surat masuk</p>
-          </Link>
           <Link href="/dashboard/surat-tugas" className="p-4 rounded-2xl bg-bubblegum-gradient-soft border-2 border-mint-200 hover:border-mint-400 hover:shadow-lg hover:shadow-mint-200/50 transition-all duration-300 text-left group">
             <FiFileText className="text-mint-500 text-xl mb-2 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-bubblegum-700">Riwayat Surat</p>
             <p className="text-xs text-bubblegum-400 mt-0.5">Semua surat tugas & SPD</p>
+          </Link>
+          <Link href="/dashboard/aktivitas" className="p-4 rounded-2xl bg-bubblegum-gradient-soft border-2 border-amber-200 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-200/50 transition-all duration-300 text-left group">
+            <FiActivity className="text-amber-500 text-xl mb-2 group-hover:scale-110 transition-transform" />
+            <p className="text-sm font-semibold text-amber-700">Aktivitas</p>
+            <p className="text-xs text-amber-400 mt-0.5">Lacak aktivitas surat Anda</p>
           </Link>
         </div>
       </div>

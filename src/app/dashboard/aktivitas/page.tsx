@@ -5,10 +5,67 @@ import {
   FiActivity, FiFilter, FiCalendar, FiChevronLeft, FiChevronRight, FiInfo,
   FiLogIn, FiLogOut, FiFilePlus, FiEdit, FiTrash2, FiSend,
   FiCheckCircle, FiXCircle, FiRefreshCw, FiFlag, FiDownload, FiClipboard, FiMapPin,
+  FiMonitor, FiSmartphone, FiGlobe,
 } from 'react-icons/fi';
 import type { ReactNode } from 'react';
 import api from '@/lib/api';
 import { ActivityLogItem, ACTIVITY_LOG_ACTION_LABELS, ACTIVITY_LOG_ACTION_COLORS } from '@/lib/types';
+
+interface ParsedUserAgent {
+  browser: string;
+  os: string;
+  device: string;
+}
+
+function parseUserAgent(ua: string | null): ParsedUserAgent | null {
+  if (!ua) return null;
+
+  // Browser detection
+  let browser = 'Unknown';
+  if (ua.includes('Edg/')) {
+    const match = ua.match(/Edg\/([\d.]+)/);
+    browser = `Edge ${match?.[1]?.split('.')[0] || ''}`.trim();
+  } else if (ua.includes('OPR/') || ua.includes('Opera')) {
+    const match = ua.match(/OPR\/([\d.]+)/);
+    browser = `Opera ${match?.[1]?.split('.')[0] || ''}`.trim();
+  } else if (ua.includes('Chrome/') && !ua.includes('Edg/')) {
+    const match = ua.match(/Chrome\/([\d.]+)/);
+    browser = `Chrome ${match?.[1]?.split('.')[0] || ''}`.trim();
+  } else if (ua.includes('Safari/') && !ua.includes('Chrome')) {
+    const match = ua.match(/Version\/([\d.]+)/);
+    browser = `Safari ${match?.[1]?.split('.')[0] || ''}`.trim();
+  } else if (ua.includes('Firefox/')) {
+    const match = ua.match(/Firefox\/([\d.]+)/);
+    browser = `Firefox ${match?.[1]?.split('.')[0] || ''}`.trim();
+  }
+
+  // OS detection
+  let os = 'Unknown';
+  if (ua.includes('Windows NT 10')) os = 'Windows 10/11';
+  else if (ua.includes('Windows NT 6.3')) os = 'Windows 8.1';
+  else if (ua.includes('Windows NT 6.1')) os = 'Windows 7';
+  else if (ua.includes('Windows')) os = 'Windows';
+  else if (ua.includes('Mac OS X')) {
+    const match = ua.match(/Mac OS X ([\d_]+)/);
+    os = `macOS ${match?.[1]?.replace(/_/g, '.') || ''}`.trim();
+  } else if (ua.includes('Android')) {
+    const match = ua.match(/Android ([\d.]+)/);
+    os = `Android ${match?.[1] || ''}`.trim();
+  } else if (ua.includes('iPhone OS') || ua.includes('iPad')) {
+    const match = ua.match(/OS ([\d_]+)/);
+    os = `iOS ${match?.[1]?.replace(/_/g, '.') || ''}`.trim();
+  } else if (ua.includes('Linux')) os = 'Linux';
+
+  // Device detection
+  let device = 'Desktop';
+  if (ua.includes('Mobile') || ua.includes('Android') && !ua.includes('Tablet')) {
+    device = 'Mobile';
+  } else if (ua.includes('Tablet') || ua.includes('iPad')) {
+    device = 'Tablet';
+  }
+
+  return { browser, os, device };
+}
 
 function getColorClasses(color: string): string {
   const map: Record<string, string> = {
@@ -223,6 +280,7 @@ export default function ActivityLogPage() {
           <div className="divide-y divide-bubblegum-50">
             {logs.map((log) => {
               const color = ACTIVITY_LOG_ACTION_COLORS[log.action] || 'gray';
+              const parsed = parseUserAgent(log.user_agent);
               return (
                 <div key={log.id} className="px-5 py-4 hover:bg-bubblegum-50/30 transition-colors">
                   <div className="flex items-start gap-4">
@@ -240,11 +298,28 @@ export default function ActivityLogPage() {
                         <span className="text-[11px] text-bubblegum-300">{formatDate(log.created_at)}</span>
                       </div>
                       <p className="text-sm text-bubblegum-700 mt-1">{log.description}</p>
-                      {log.ip_address && (
-                        <p className="text-[10px] text-bubblegum-300 mt-1">
-                          IP: {log.ip_address}
-                        </p>
-                      )}
+                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                        {log.ip_address && (
+                          <span className="inline-flex items-center gap-1 text-[10px] text-bubblegum-300">
+                            <FiGlobe className="text-[10px]" />
+                            {log.ip_address}
+                          </span>
+                        )}
+                        {parsed && (
+                          <>
+                            <span className="inline-flex items-center gap-1 text-[10px] text-bubblegum-300">
+                              {parsed.device === 'Mobile' ? <FiSmartphone className="text-[10px]" /> : <FiMonitor className="text-[10px]" />}
+                              {parsed.device}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] text-bubblegum-300">
+                              {parsed.os}
+                            </span>
+                            <span className="inline-flex items-center gap-1 text-[10px] text-bubblegum-300">
+                              {parsed.browser}
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

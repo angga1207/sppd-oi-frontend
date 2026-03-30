@@ -62,6 +62,7 @@ export async function PUT(
     const { path } = await params;
     const pathStr = path ? path.join('/') : '';
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
     const body = await request.json();
 
     const response = await fetch(`${BACKEND_URL}/spd/${pathStr}`, {
@@ -70,6 +71,7 @@ export async function PUT(
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: authHeader,
+        'X-User-Agent': userAgent,
       },
       body: JSON.stringify(body),
     });
@@ -93,6 +95,7 @@ export async function POST(
     const { path } = await params;
     const pathStr = path ? path.join('/') : '';
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
     const contentType = request.headers.get('Content-Type') || '';
 
     let fetchOptions: RequestInit;
@@ -105,6 +108,7 @@ export async function POST(
         headers: {
           Accept: 'application/json',
           Authorization: authHeader,
+          'X-User-Agent': userAgent,
         },
         body: formData,
       };
@@ -116,6 +120,7 @@ export async function POST(
           'Content-Type': 'application/json',
           Accept: 'application/json',
           Authorization: authHeader,
+          'X-User-Agent': userAgent,
         },
         body: JSON.stringify(body),
       };

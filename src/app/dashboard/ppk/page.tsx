@@ -119,11 +119,15 @@ export default function PpkManagementPage() {
 
     // Pegawai search
     const searchPegawai = useCallback(async () => {
-        if (!pegawaiSearchTerm.trim()) return;
         setPegawaiLoading(true);
         try {
             const params: Record<string, string | number> = { search: pegawaiSearchTerm };
-            if (pegawaiSkpd) params.skpd_id = pegawaiSkpd;
+            if (pegawaiSkpd) {
+                // Resolve id_eoffice (Semesta external ID) from the selected internal instance_id
+                const selectedInstance = instances.find(i => i.id === pegawaiSkpd);
+                const idEoffice = selectedInstance?.id_eoffice;
+                if (idEoffice) params.id_skpd = idEoffice;
+            }
             const res = await api.get('/pegawai', { params });
             setPegawaiResults(res.data.data || []);
         } catch {
@@ -131,16 +135,20 @@ export default function PpkManagementPage() {
         } finally {
             setPegawaiLoading(false);
         }
-    }, [pegawaiSearchTerm, pegawaiSkpd]);
+    }, [pegawaiSearchTerm, pegawaiSkpd, instances]);
 
+    // Re-fetch when search term changes
     useEffect(() => {
-        if (pegawaiSearchTerm.trim().length >= 2) {
-            const timer = setTimeout(searchPegawai, 400);
-            return () => clearTimeout(timer);
-        } else {
-            setPegawaiResults([]);
-        }
+        const timer = setTimeout(searchPegawai, 400);
+        return () => clearTimeout(timer);
     }, [pegawaiSearchTerm, searchPegawai]);
+
+    // Auto-load list when OPD changes or modal opens
+    useEffect(() => {
+        if (showPegawaiModal && pegawaiSkpd) {
+            searchPegawai();
+        }
+    }, [pegawaiSkpd, showPegawaiModal]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Open form for create
     const openCreate = () => {
@@ -419,7 +427,12 @@ export default function PpkManagementPage() {
                                 <SearchableSelect
                                     options={instanceOptions}
                                     value={form.instance_id ? instanceOptions.find(o => o.value === form.instance_id) || null : null}
-                                    onChange={(opt) => setForm(prev => ({ ...prev, instance_id: opt ? Number(opt.value) : null }))}
+                                    onChange={(opt) => {
+                                        const newInstanceId = opt ? Number(opt.value) : null;
+                                        setForm(prev => ({ ...prev, instance_id: newInstanceId }));
+                                        // Keep pegawaiSkpd in sync so cari pegawai uses the correct OPD
+                                        setPegawaiSkpd(newInstanceId);
+                                    }}
                                     placeholder="Pilih OPD..."
                                     isLoading={instancesLoading}
                                 />
@@ -429,13 +442,14 @@ export default function PpkManagementPage() {
                             <div>
                                 <button
                                     type="button"
+                                    disabled={!form.instance_id}
                                     onClick={() => {
                                         setPegawaiSkpd(form.instance_id);
                                         setShowPegawaiModal(true);
                                     }}
-                                    className="flex items-center gap-2 px-4 py-2 text-sm bg-bubblegum-50 text-bubblegum-700 rounded-xl hover:bg-bubblegum-100 border border-bubblegum-200 transition-colors w-full justify-center"
+                                    className="flex items-center gap-2 px-4 py-2 text-sm bg-bubblegum-50 text-bubblegum-700 rounded-xl hover:bg-bubblegum-100 border border-bubblegum-200 transition-colors w-full justify-center disabled:opacity-40 disabled:cursor-not-allowed"
                                 >
-                                    <FiSearch /> Cari Pegawai dari Semesta
+                                    <FiSearch /> {form.instance_id ? 'Cari Pegawai dari Semesta' : 'Pilih OPD dulu untuk cari pegawai'}
                                 </button>
                             </div>
 
@@ -550,14 +564,14 @@ export default function PpkManagementPage() {
                         </div>
 
                         <div className="p-4 border-b border-gray-100 space-y-3">
-                            <SearchableSelect
+                            {/* <SearchableSelect
                                 options={instanceOptions}
                                 value={pegawaiSkpd ? instanceOptions.find(o => o.value === pegawaiSkpd) || null : null}
                                 onChange={(opt) => setPegawaiSkpd(opt ? Number(opt.value) : null)}
                                 placeholder="Filter OPD..."
                                 isClearable
                                 isLoading={instancesLoading}
-                            />
+                            /> */}
                             <div className="relative">
                                 <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input

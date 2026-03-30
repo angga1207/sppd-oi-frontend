@@ -35,7 +35,7 @@ const MONTHS = [
 function getYearOptions(): number[] {
   const currentYear = new Date().getFullYear();
   const years: number[] = [];
-  for (let y = currentYear; y >= currentYear - 5; y--) {
+  for (let y = currentYear; y >= 2025; y--) {
     years.push(y);
   }
   return years;

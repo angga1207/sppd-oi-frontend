@@ -5,6 +5,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000/api';
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get('Authorization') || '';
+    const userAgent = request.headers.get('X-User-Agent') || request.headers.get('User-Agent') || '';
 
     const response = await fetch(`${BACKEND_URL}/auth/logout`, {
       method: 'POST',
@@ -12,6 +13,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Authorization': authHeader,
+        'X-User-Agent': userAgent,
       },
     });
 

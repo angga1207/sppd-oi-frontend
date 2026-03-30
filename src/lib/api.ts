@@ -11,7 +11,7 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - attach Bearer token
+// Request interceptor - attach Bearer token & User-Agent
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
@@ -19,6 +19,8 @@ api.interceptors.request.use(
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
+      // Send browser User-Agent so the proxy can forward it to backend
+      config.headers['X-User-Agent'] = navigator.userAgent;
     }
     return config;
   },
