@@ -17,10 +17,10 @@ export default function SuratTugasPreviewPage() {
     const { data, handleDownload, actionLoading } = useSuratTugasDetail();
     const [activeTab, setActiveTab] = useState<'st' | 'spd'>('st');
     // Track flipped state per SPD id
-    const [flippedSpd, setFlippedSpd] = useState<Record<number, boolean>>({});
+    const [flippedSpd, setFlippedSpd] = useState<Record<string, boolean>>({});
     // Signed PDF blob URLs
     const [stPdfUrl, setStPdfUrl] = useState<string | null>(null);
-    const [spdPdfUrls, setSpdPdfUrls] = useState<Record<number, string>>({});
+    const [spdPdfUrls, setSpdPdfUrls] = useState<Record<string, string>>({});
     const [loadingPdf, setLoadingPdf] = useState<string | null>(null);
 
     const isSigned = data.status === 'ditandatangani' || data.status === 'selesai';
@@ -38,7 +38,7 @@ export default function SuratTugasPreviewPage() {
     }, [isSigned, data.file_surat_tugas_signed, data.id]);
 
     // Load SPD signed PDF
-    const loadSpdPdf = useCallback(async (spdId: number) => {
+    const loadSpdPdf = useCallback(async (spdId: string) => {
         setLoadingPdf(`spd-${spdId}`);
         try {
             const res = await api.get(`/spd/${spdId}/download`, { responseType: 'blob' });
@@ -72,7 +72,7 @@ export default function SuratTugasPreviewPage() {
         };
     }, [stPdfUrl, spdPdfUrls]);
 
-    const toggleFlip = (spdId: number) => {
+    const toggleFlip = (spdId: string) => {
         setFlippedSpd(prev => ({ ...prev, [spdId]: !prev[spdId] }));
     };
 

@@ -21,14 +21,14 @@ import { swalError, swalSuccess, swalWarning } from '@/lib/swal';
 export default function SuratTugasSpdPage() {
     const { data, actionLoading, handleDownload, fetchData } = useSuratTugasDetail();
 
-    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingId, setEditingId] = useState<string | null>(null);
     const [editNomor, setEditNomor] = useState('');
     const [saving, setSaving] = useState(false);
 
     const spdList = data.surat_perjalanan_dinas || [];
     const isDraft = data.status === 'draft';
 
-    const startEdit = (spdId: number, currentNomor: string | null) => {
+    const startEdit = (spdId: string, currentNomor: string | null) => {
         setEditingId(spdId);
         setEditNomor(currentNomor || '');
     };
@@ -38,7 +38,7 @@ export default function SuratTugasSpdPage() {
         setEditNomor('');
     };
 
-    const handleSaveNomor = async (spdId: number) => {
+    const handleSaveNomor = async (spdId: string) => {
         if (!editNomor.trim()) {
             swalWarning('Perhatian', 'Nomor SPD tidak boleh kosong.');
             return;
