@@ -49,7 +49,7 @@ const SPD_REDIRECT_FIELDS: FormField[] = [
 ];
 
 export interface SpdInfo {
-    id: number;
+    id: any;
     nomor_spd: string | null;
     pegawai_nama: string | null;
 }
