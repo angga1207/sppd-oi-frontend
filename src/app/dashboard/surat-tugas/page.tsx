@@ -63,7 +63,7 @@ export default function SuratTugasListPage() {
   const [yearFilter, setYearFilter] = useState<string>(String(new Date().getFullYear()));
   const [monthFilter, setMonthFilter] = useState<string>('');
   const [page, setPage] = useState(1);
-  const [deleting, setDeleting] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -89,7 +89,7 @@ export default function SuratTugasListPage() {
     fetchData();
   }, [fetchData]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const confirmed = await swalConfirm(
       'Hapus Surat Tugas?',
       'Surat tugas yang dihapus tidak dapat dikembalikan.',
@@ -112,7 +112,7 @@ export default function SuratTugasListPage() {
     }
   };
 
-  const handleKirim = async (id: number) => {
+  const handleKirim = async (id: string) => {
     const confirmed = await swalConfirm(
       'Kirim Surat Tugas?',
       'Surat tugas akan dikirim untuk ditandatangani.',

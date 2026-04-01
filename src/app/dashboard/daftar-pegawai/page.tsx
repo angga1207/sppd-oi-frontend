@@ -44,6 +44,7 @@ interface SyncLogItem {
     started_at: string | null;
     finished_at: string | null;
     created_at: string;
+    updated_at: string;
     instance?: { id: number; name: string; alias: string | null } | null;
 }
 
@@ -556,7 +557,7 @@ export default function DaftarPegawaiPage() {
                                                     }`}>
                                                     {log.status === 'success' ? 'Berhasil' : log.status === 'failed' ? 'Gagal' : 'Berjalan'}
                                                 </span>
-                                                <span className="text-[11px] text-bubblegum-300">{formatDate(log.created_at)}</span>
+                                                <span className="text-[11px] text-bubblegum-300">{formatDate(log.updated_at)}</span>
                                             </div>
 
                                             {log.status === 'success' && (
