@@ -176,6 +176,11 @@ export default function SuratTugasFormPage() {
     const [penandatanganLoading, setPenandatanganLoading] = useState(false);
     const [penandatanganSkpd, setPenandatanganSkpd] = useState<number | null>(null);
 
+    // PPK Select
+    const [ppkOptions, setPpkOptions] = useState<SelectOption[]>([]);
+    const [ppkLoading, setPpkLoading] = useState(false);
+    const [selectedPpk, setSelectedPpk] = useState<SelectOption | null>(null);
+
     // SiCaram - Sub Kegiatan & Kode Rekening
     const [sicaramData, setSicaramData] = useState<SiCaramSubKegiatan[]>([]);
     const [sicaramLoading, setSicaramLoading] = useState(false);
@@ -879,32 +884,63 @@ export default function SuratTugasFormPage() {
         }
     }, [instances, form.penandatangan_instance_id, selectedPenandatanganInstance]);
 
-    // Auto-fetch PPK for user's instance on initial load (create mode only)
+    // Auto-fetch PPK list for user's/ST's instance
     useEffect(() => {
-        if (isEdit) return; // In edit mode, PPK is loaded from saved data
-        if (!user?.instance_id) return;
+        let instanceId: number | null = null;
+        
+        if (isEdit) {
+            // In edit mode: use ppk_instance_id if set, otherwise use ST's instance_id
+            instanceId = form.ppk_instance_id || form.instance_id || null;
+        } else {
+            // In create mode: use user's instance_id
+            instanceId = user?.instance_id || null;
+        }
+        
+        if (!instanceId) return;
 
-        const fetchPpk = async () => {
+        const fetchPpkList = async () => {
+            setPpkLoading(true);
             try {
-                const res = await api.get(`/ppk/instance/${user.instance_id}`);
-                if (res.data.success && res.data.data) {
-                    const ppk = res.data.data;
-                    setForm(prev => ({
-                        ...prev,
-                        ppk_nama: ppk.nama || '',
-                        ppk_nip: ppk.nip || '',
-                        ppk_jabatan: ppk.jabatan || '',
-                        ppk_pangkat: ppk.pangkat || '',
-                        ppk_golongan: ppk.golongan || '',
-                        ppk_instance_id: ppk.instance_id || null,
+                const res = await api.get(`/ppk/instance/${instanceId}`);
+                if (res.data.success && Array.isArray(res.data.data)) {
+                    const list = res.data.data;
+                    const options: SelectOption[] = list.map((ppk: { id: number; nama: string; nip: string; jabatan?: string }) => ({
+                        value: ppk.id,
+                        label: `${ppk.nama} — ${ppk.jabatan || 'PPK'} (${ppk.nip})`,
+                        data: ppk,
                     }));
+                    setPpkOptions(options);
+
+                    if (list.length === 1) {
+                        // Auto-select if only one PPK (applies to both create and edit without PPK)
+                        const ppk = list[0];
+                        setSelectedPpk(options[0]);
+                        setForm(prev => ({
+                            ...prev,
+                            ppk_nama: ppk.nama || '',
+                            ppk_nip: ppk.nip || '',
+                            ppk_jabatan: ppk.jabatan || '',
+                            ppk_pangkat: ppk.pangkat || '',
+                            ppk_golongan: ppk.golongan || '',
+                            ppk_instance_id: ppk.instance_id || null,
+                        }));
+                    } else if (isEdit && form.ppk_nip) {
+                        // In edit mode with saved PPK, pre-select the matching option
+                        const match = options.find((o: SelectOption) => {
+                            const d = o.data as { nip: string };
+                            return d.nip === form.ppk_nip;
+                        });
+                        if (match) setSelectedPpk(match);
+                    }
+                    // If multiple PPKs and no saved PPK (edit mode without PPK), just show options without selection
                 }
             } catch { /* ignore */ }
+            setPpkLoading(false);
         };
 
-        fetchPpk();
+        fetchPpkList();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user?.instance_id, isEdit]);
+    }, [user?.instance_id, isEdit, form.ppk_instance_id, form.instance_id]);
 
     // Helper: check if RichTextEditor HTML content is effectively empty
     const isHtmlEmpty = (html: string | null | undefined): boolean => {
@@ -1926,13 +1962,52 @@ export default function SuratTugasFormPage() {
                                 />
                             </div>
 
-                            {/* Pejabat Pembuat Komitmen (PPK) — auto-filled from master data */}
+                            {/* Pejabat Pembuat Komitmen (PPK) — select or auto-filled */}
                             <div className="border border-bubblegum-200 rounded-2xl p-4 bg-bubblegum-50/30">
                                 <label className="block text-sm font-semibold text-bubblegum-700 mb-2">
                                     <FiUserCheck className="inline -mt-0.5 mr-1" />
                                     Pejabat Pembuat Komitmen (PPK)
-                                    <span className="text-xs font-normal text-bubblegum-400 ml-2">(otomatis dari Master PPK)</span>
+                                    {ppkOptions.length <= 1 && (
+                                        <span className="text-xs font-normal text-bubblegum-400 ml-2">(otomatis dari Master PPK)</span>
+                                    )}
                                 </label>
+                                {ppkOptions.length > 1 && (
+                                    <div className="mb-3">
+                                        <SearchableSelect
+                                            options={ppkOptions}
+                                            value={selectedPpk}
+                                            onChange={(opt) => {
+                                                setSelectedPpk(opt);
+                                                if (opt && opt.data) {
+                                                    const ppk = opt.data as { nama: string; nip: string; jabatan?: string; pangkat?: string; golongan?: string; instance_id?: number };
+                                                    setForm(prev => ({
+                                                        ...prev,
+                                                        ppk_nama: ppk.nama || '',
+                                                        ppk_nip: ppk.nip || '',
+                                                        ppk_jabatan: ppk.jabatan || '',
+                                                        ppk_pangkat: ppk.pangkat || '',
+                                                        ppk_golongan: ppk.golongan || '',
+                                                        ppk_instance_id: ppk.instance_id || null,
+                                                    }));
+                                                } else {
+                                                    setForm(prev => ({
+                                                        ...prev,
+                                                        ppk_nama: '',
+                                                        ppk_nip: '',
+                                                        ppk_jabatan: '',
+                                                        ppk_pangkat: '',
+                                                        ppk_golongan: '',
+                                                        ppk_instance_id: null,
+                                                    }));
+                                                }
+                                            }}
+                                            isLoading={ppkLoading}
+                                            placeholder="Pilih PPK..."
+                                            noOptionsMessage="Tidak ada PPK aktif"
+                                            isDisabled={isReadOnly}
+                                        />
+                                    </div>
+                                )}
                                 {form.ppk_nama ? (
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
@@ -1950,7 +2025,7 @@ export default function SuratTugasFormPage() {
                                     </div>
                                 ) : (
                                     <p className="text-xs text-bubblegum-400 italic">
-                                        Belum ada PPK yang ditetapkan untuk OPD Anda. Hubungi Super Admin untuk mengatur Master PPK.
+                                        {ppkLoading ? 'Memuat data PPK...' : 'Belum ada PPK yang ditetapkan untuk OPD Anda. Hubungi Super Admin untuk mengatur Master PPK.'}
                                     </p>
                                 )}
                             </div>

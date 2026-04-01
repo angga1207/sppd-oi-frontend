@@ -202,7 +202,7 @@ export default function SuratTugasListPage() {
       </div>
 
       {/* Table */}
-      <div className="glass-card rounded-3xl overflow-hidden">
+      <div className="glass-card rounded-3xl overflow-auto">
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 rounded-full border-3 border-bubblegum-200 border-t-bubblegum-500 animate-spin" />
@@ -257,7 +257,7 @@ export default function SuratTugasListPage() {
                       Nama / NIP
                     </th>
                     <th className="text-left px-4 py-2 text-[10px] font-medium text-bubblegum-400 uppercase border-r border-bubblegum-100">
-                      Pangkat / Gol.
+                      Jabatan
                     </th>
                   </tr>
                 </thead>
@@ -349,8 +349,8 @@ export default function SuratTugasListPage() {
                         {/* Penandatangan Pangkat / Golongan */}
                         <td className="px-4 py-3 border-r border-bubblegum-100">
                           <div className="max-w-35">
-                            {st.penandatangan_instance ? (
-                              <p className="text-bubblegum-600 text-[11px] truncate">{st.penandatangan_instance.alias || st.penandatangan_instance.name}</p>
+                            {st.penandatangan_jabatan ? (
+                              <p className="text-bubblegum-600 text-[11px] truncate">{st.penandatangan_jabatan}</p>
                             ) : (
                               <span className="text-bubblegum-300 text-xs">-</span>
                             )}

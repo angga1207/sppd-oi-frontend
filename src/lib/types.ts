@@ -115,8 +115,8 @@ export interface KlasifikasiNomorSurat {
 }
 
 export interface SuratTugasPegawai {
-  id: number;
-  surat_tugas_id: number;
+  id: string;
+  surat_tugas_id: string;
   semesta_pegawai_id: number | null;
   nip: string;
   nama_lengkap: string;
@@ -130,12 +130,12 @@ export interface SuratTugasPegawai {
 }
 
 export interface SuratPerjalananDinas {
-  id: number;
+  id: string;
   nomor_spd: string | null;
   tingkat_biaya: string | null;
   tingkat_biaya_label: string | null;
-  surat_tugas_id: number;
-  surat_tugas_pegawai_id: number;
+  surat_tugas_id: string;
+  surat_tugas_pegawai_id: string;
   status: SuratTugasStatus;
   file_spd: string | null;
   file_spd_signed: string | null;
@@ -148,7 +148,7 @@ export interface SuratPerjalananDinas {
 
 export interface SpdPengikut {
   id: number;
-  spd_id: number;
+  spd_id: string;
   nama: string;
   tanggal_lahir: string | null;
   keterangan: string | null;
@@ -162,13 +162,13 @@ export interface SpdPengikutFormItem {
 
 export interface LaporanPerjalananDinas {
   id: number;
-  spd_id: number;
+  spd_id: string;
   laporan: string;
   lampiran: string[] | null;
 }
 
 export interface SuratTugas {
-  id: number;
+  id: string;
   nomor_surat: string | null;
   klasifikasi_id: number | null;
   kategori_id: number | null;
@@ -442,7 +442,7 @@ export interface ChartKategoriItem {
 }
 
 export interface ActiveTripItem {
-  id: number;
+  id: string;
   nomor_surat: string | null;
   untuk: string | null;
   status: string;
@@ -460,7 +460,7 @@ export interface ActiveTripItem {
   created_at: string;
   instance?: { id: number; name: string; alias: string | null } | null;
   kategori?: { id: number; nama: string } | null;
-  pegawai?: { id: number; surat_tugas_id: number; nama_lengkap: string; nip: string; jabatan: string | null }[];
+  pegawai?: { id: string; surat_tugas_id: string; nama_lengkap: string; nip: string; jabatan: string | null }[];
 }
 
 export interface DashboardData {
@@ -489,7 +489,7 @@ export interface ChartJenisPerjalananItem {
 }
 
 export interface LogSurat {
-  id: number;
+  id: string;
   aksi: string;
   label: string;
   color: string;
@@ -512,7 +512,7 @@ export interface AppNotification {
   body: string;
   type: 'surat_dikirim' | 'surat_ditandatangani' | 'surat_ditolak';
   data: {
-    surat_tugas_id?: number;
+    surat_tugas_id?: string;
     nomor_surat?: string;
     sender_name?: string;
     signer_name?: string;
@@ -541,7 +541,7 @@ export const NOTIFICATION_TYPE_COLORS: Record<string, string> = {
 // ============ Activity Log ============
 
 export interface ActivityLogItem {
-  id: number;
+  id: string;
   user_id: number;
   action: string;
   description: string;
