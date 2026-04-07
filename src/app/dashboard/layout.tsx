@@ -60,7 +60,7 @@ export default function DashboardLayout({
           onClick={closeMobileSidebar}
         />
         <Sidebar isOpen={mobileOpen} collapsed={collapsed} onClose={closeMobileSidebar} />
-        <div className="app-main flex-1 flex flex-col">
+        <div className="app-main flex-1 flex flex-col min-w-0">
           <Header onToggleSidebar={toggleSidebar} />
           <main className="flex-1 p-6">
             {children}

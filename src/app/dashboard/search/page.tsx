@@ -189,34 +189,36 @@ function SearchPageContent() {
             </div>
 
             {/* Tabs */}
-            <div className="flex items-center gap-1 mb-6 p-1 rounded-2xl bg-white/60 border border-bubblegum-100 w-fit">
-                {TAB_CONFIG.map(tab => {
-                    const isActive = activeTab === tab.key;
-                    const count = tab.key === 'all'
-                        ? results?.total
-                        : results?.counts?.[tab.key];
-                    const Icon = tab.icon;
-                    return (
-                        <button
-                            key={tab.key}
-                            onClick={() => handleTabChange(tab.key)}
-                            className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${isActive
-                                ? 'bg-bubblegum-gradient text-white shadow-md shadow-bubblegum-300/30'
-                                : 'text-bubblegum-400 hover:text-bubblegum-600 hover:bg-bubblegum-50'
-                                }`}
-                        >
-                            <Icon className="text-xs" />
-                            {tab.label}
-                            {count !== undefined && count > 0 && (
-                                <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-bubblegum-100 text-bubblegum-500'
-                                    }`}>
-                                    {count}
-                                </span>
-                            )}
-                        </button>
-                    );
-                })}
-            </div>
+            {initialQuery.trim().length >= 2 && (
+                <div className="flex items-center gap-1 mb-6 p-1 rounded-2xl bg-white/60 border border-bubblegum-100 w-fit">
+                    {TAB_CONFIG.map(tab => {
+                        const isActive = activeTab === tab.key;
+                        const count = tab.key === 'all'
+                            ? results?.total
+                            : results?.counts?.[tab.key];
+                        const Icon = tab.icon;
+                        return (
+                            <button
+                                key={tab.key}
+                                onClick={() => handleTabChange(tab.key)}
+                                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all ${isActive
+                                    ? 'bg-bubblegum-gradient text-white shadow-md shadow-bubblegum-300/30'
+                                    : 'text-bubblegum-400 hover:text-bubblegum-600 hover:bg-bubblegum-50'
+                                    }`}
+                            >
+                                <Icon className="text-xs" />
+                                {tab.label}
+                                {count !== undefined && count > 0 && (
+                                    <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${isActive ? 'bg-white/20 text-white' : 'bg-bubblegum-100 text-bubblegum-500'
+                                        }`}>
+                                        {count}
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
 
             {/* AI Summary */}
             {results?.ai_summary && (

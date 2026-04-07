@@ -223,7 +223,8 @@ export default function SuratTugasListPage() {
                     <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={2}>Nomor Surat</th>
                     <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={3}>Waktu Perjalanan</th>
                     <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={2}>Tujuan</th>
-                    <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={2}>Penandatangan</th>
+                    <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={1}>Penandatangan</th>
+                    <th className="text-center px-4 py-2 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-b border-x border-bubblegum-100" colSpan={1}>Pembuat Surat</th>
                     <th className="text-center px-4 py-3 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider border-r border-bubblegum-100" rowSpan={2}>Status</th>
                     <th className="text-center px-4 py-3 text-xs font-semibold text-bubblegum-500 uppercase tracking-wider" rowSpan={2}>Aksi</th>
                   </tr>
@@ -253,11 +254,12 @@ export default function SuratTugasListPage() {
                       Lokasi & Alat Angkut
                     </th>
                     {/* Penandatangan sub */}
-                    <th className="text-left px-4 py-2 text-[10px] font-medium text-bubblegum-400 uppercase border-l border-bubblegum-100">
-                      Nama / NIP
+                    <th className="text-left px-4 py-2 text-[10px] font-medium text-bubblegum-400 uppercase border-x border-bubblegum-100">
+                      Nama / NIP / Jabatan
                     </th>
-                    <th className="text-left px-4 py-2 text-[10px] font-medium text-bubblegum-400 uppercase border-r border-bubblegum-100">
-                      Jabatan
+                    {/* Pembuat Surat sub */}
+                    <th className="text-left px-4 py-2 text-[10px] font-medium text-bubblegum-400 uppercase border-x border-bubblegum-100">
+                      Nama / NIP
                     </th>
                   </tr>
                 </thead>
@@ -280,7 +282,7 @@ export default function SuratTugasListPage() {
                         {/* OPD Pembuat */}
                         <td className="px-4 py-3 border-r border-bubblegum-100">
                           <p className="text-bubblegum-700 text-xs font-medium truncate max-w-40">
-                            {st.instance?.alias || st.instance?.name || '-'}
+                            {st.instance?.name || '-'}
                           </p>
                         </td>
 
@@ -343,19 +345,26 @@ export default function SuratTugasListPage() {
                             {st.penandatangan_nip && (
                               <p className="text-bubblegum-400 text-[11px]">{st.penandatangan_nip}</p>
                             )}
+                            <div className="max-w-50">
+                              {st.penandatangan_jabatan ? (
+                                <p className="text-bubblegum-600 text-[11px] truncate">{st.penandatangan_jabatan}</p>
+                              ) : (
+                                <span className="text-bubblegum-300 text-xs">-</span>
+                              )}
+                            </div>
                           </div>
                         </td>
 
-                        {/* Penandatangan Pangkat / Golongan */}
-                        <td className="px-4 py-3 border-r border-bubblegum-100">
-                          <div className="max-w-35">
-                            {st.penandatangan_jabatan ? (
-                              <p className="text-bubblegum-600 text-[11px] truncate">{st.penandatangan_jabatan}</p>
-                            ) : (
-                              <span className="text-bubblegum-300 text-xs">-</span>
+                        {/* Pembuat Surat Nama */}
+                        <td className="px-4 py-3 border-l border-bubblegum-100">
+                          <div className="max-w-40">
+                            <p className="text-bubblegum-800 text-xs font-medium truncate">{st?.created_by_user?.name || '-'}</p>
+                            {st?.created_by_user?.username && (
+                              <p className="text-bubblegum-400 text-[11px]">{st?.created_by_user?.username}</p>
                             )}
                           </div>
                         </td>
+
 
                         {/* Status */}
                         <td className="px-4 py-3 border-l border-bubblegum-100">

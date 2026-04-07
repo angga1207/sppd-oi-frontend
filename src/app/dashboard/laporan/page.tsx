@@ -153,11 +153,10 @@ function TabButton({ active, onClick, icon: Icon, label }: { active: boolean; on
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${
-        active
+      className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all duration-300 ${active
           ? 'bg-linear-to-r from-bubblegum-500 to-grape-500 text-white shadow-lg shadow-bubblegum-300/40 scale-[1.02]'
           : 'bg-white/60 text-bubblegum-600 hover:bg-white hover:text-bubblegum-700 hover:shadow-md'
-      }`}
+        }`}
     >
       <Icon className="text-base" /> {label}
     </button>
@@ -193,7 +192,7 @@ export default function LaporanPage() {
   const yearOptions = useMemo(() => {
     const current = new Date().getFullYear();
     const opts = [];
-    for (let y = current; y >= current - 5; y--) opts.push(y);
+    for (let y = current; y >= 2025; y--) opts.push(y);
     return opts;
   }, []);
 
@@ -280,11 +279,10 @@ export default function LaporanPage() {
             {/* Filter toggle */}
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 shadow-sm ${
-                filtersOpen || activeFilterCount > 0
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 shadow-sm ${filtersOpen || activeFilterCount > 0
                   ? 'bg-linear-to-r from-bubblegum-500 to-grape-500 text-white shadow-bubblegum-300/40'
                   : 'bg-white border border-bubblegum-200 text-bubblegum-600 hover:bg-bubblegum-50'
-              }`}
+                }`}
             >
               <FiFilter className="text-base" />
               Filter
@@ -777,9 +775,8 @@ function ChartsTab({ data, loading }: { data: ReportData | null; loading: boolea
                   <tr key={i} className="border-b border-bubblegum-50 hover:bg-bubblegum-50/50 transition-colors">
                     <td className="py-3 px-3">
                       {i < 3 ? (
-                        <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-white text-xs font-bold ${
-                          i === 0 ? 'bg-linear-to-br from-amber-400 to-amber-600' : i === 1 ? 'bg-linear-to-br from-gray-300 to-gray-500' : 'bg-linear-to-br from-orange-300 to-orange-500'
-                        }`}>{i + 1}</span>
+                        <span className={`w-7 h-7 rounded-xl flex items-center justify-center text-white text-xs font-bold ${i === 0 ? 'bg-linear-to-br from-amber-400 to-amber-600' : i === 1 ? 'bg-linear-to-br from-gray-300 to-gray-500' : 'bg-linear-to-br from-orange-300 to-orange-500'
+                          }`}>{i + 1}</span>
                       ) : <span className="text-bubblegum-400">{i + 1}</span>}
                     </td>
                     <td className="py-3 px-3">
@@ -1090,11 +1087,10 @@ function DetailTableTab({
                   <button
                     key={p}
                     onClick={() => onPageChange(p)}
-                    className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${
-                      p === data.current_page
+                    className={`w-9 h-9 rounded-xl text-sm font-medium transition-all ${p === data.current_page
                         ? 'bg-linear-to-r from-bubblegum-500 to-grape-500 text-white shadow-md shadow-bubblegum-300/40'
                         : 'border border-bubblegum-200 text-bubblegum-600 hover:bg-bubblegum-50'
-                    }`}
+                      }`}
                   >
                     {p}
                   </button>

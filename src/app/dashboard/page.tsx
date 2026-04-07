@@ -598,7 +598,7 @@ export default function DashboardPage() {
                       <th className="pb-2 pr-3">#</th>
                       <th className="pb-2 pr-3">Nama Pegawai</th>
                       <th className="pb-2 pr-3">Jabatan</th>
-                      <th className="pb-2 text-right">Jumlah Tugas</th>
+                      <th className="pb-2 text-right whitespace-nowrap">Jumlah Tugas</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -610,7 +610,7 @@ export default function DashboardPage() {
                           <p className="text-xs text-bubblegum-400">{p.nip}</p>
                         </td>
                         <td className="py-2 pr-3 text-bubblegum-600 text-xs">{p.jabatan || '-'}</td>
-                        <td className="py-2 text-right">
+                        <td className="py-2 text-right whitespace-nowrap">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-bubblegum-100 text-bubblegum-700 text-xs font-semibold">
                             {p.total_tugas} penugasan
                           </span>
@@ -795,7 +795,7 @@ export default function DashboardPage() {
           <Link href="/dashboard/aktivitas" className="p-4 rounded-2xl bg-bubblegum-gradient-soft border-2 border-amber-200 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-200/50 transition-all duration-300 text-left group">
             <FiActivity className="text-amber-500 text-xl mb-2 group-hover:scale-110 transition-transform" />
             <p className="text-sm font-semibold text-amber-700">Aktivitas</p>
-            <p className="text-xs text-amber-400 mt-0.5">Lacak aktivitas surat Anda</p>
+            <p className="text-xs text-amber-400 mt-0.5">Lacak aktivitas Anda</p>
           </Link>
         </div>
       </div>
