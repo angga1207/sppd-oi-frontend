@@ -35,6 +35,8 @@ export default function PpkManagementPage() {
     const router = useRouter();
     const { user } = useAuth();
     const isSuperAdmin = user?.role?.slug === 'super-admin';
+    const isKepegawaian = user?.employee?.is_kepegawaian === true;
+    const canAccess = isSuperAdmin || isKepegawaian;
 
     const [items, setItems] = useState<PejabatPembuatKomitmen[]>([]);
     const [loading, setLoading] = useState(true);
@@ -99,16 +101,20 @@ export default function PpkManagementPage() {
     }, []);
 
     useEffect(() => {
-        if (!isSuperAdmin) {
+        if (!canAccess) {
             router.replace('/dashboard');
             return;
         }
+        // For non-super-admin, lock filter to own OPD
+        if (!isSuperAdmin && user?.instance_id) {
+            setFilterInstance(user.instance_id);
+        }
         loadInstances();
-    }, [isSuperAdmin, router, loadInstances]);
+    }, [canAccess, isSuperAdmin, user?.instance_id, router, loadInstances]);
 
     useEffect(() => {
-        if (isSuperAdmin) fetchData();
-    }, [fetchData, isSuperAdmin]);
+        if (canAccess) fetchData();
+    }, [fetchData, canAccess]);
 
     // Debounced search
     const [searchInput, setSearchInput] = useState('');
@@ -152,7 +158,7 @@ export default function PpkManagementPage() {
 
     // Open form for create
     const openCreate = () => {
-        setForm({ ...emptyForm });
+        setForm({ ...emptyForm, instance_id: isSuperAdmin ? null : (user?.instance_id ?? null) });
         setEditId(null);
         setFormError('');
         setShowModal(true);
@@ -253,7 +259,7 @@ export default function PpkManagementPage() {
         label: i.name,
     }));
 
-    if (!isSuperAdmin) return null;
+    if (!canAccess) return null;
 
     // Group items by instance
     const groupedByInstance = items.reduce((acc, ppk) => {
@@ -294,7 +300,7 @@ export default function PpkManagementPage() {
 
             {/* Filters */}
             <div className="bg-white rounded-2xl shadow-sm border border-bubblegum-100 p-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className={`grid grid-cols-1 ${isSuperAdmin ? 'md:grid-cols-2' : ''} gap-4`}>
                     {/* Search */}
                     <div className="relative">
                         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -306,15 +312,17 @@ export default function PpkManagementPage() {
                             className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-bubblegum-300 focus:border-bubblegum-400 outline-none"
                         />
                     </div>
-                    {/* Instance filter */}
-                    <SearchableSelect
-                        options={instanceOptions}
-                        value={filterInstance ? instanceOptions.find(o => o.value === filterInstance) || null : null}
-                        onChange={(opt) => setFilterInstance(opt ? Number(opt.value) : null)}
-                        placeholder="Filter OPD..."
-                        isClearable
-                        isLoading={instancesLoading}
-                    />
+                    {/* Instance filter — super-admin only */}
+                    {isSuperAdmin && (
+                        <SearchableSelect
+                            options={instanceOptions}
+                            value={filterInstance ? instanceOptions.find(o => o.value === filterInstance) || null : null}
+                            onChange={(opt) => setFilterInstance(opt ? Number(opt.value) : null)}
+                            placeholder="Filter OPD..."
+                            isClearable
+                            isLoading={instancesLoading}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -424,18 +432,27 @@ export default function PpkManagementPage() {
                             {/* OPD Selection */}
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">OPD / Instansi <span className="text-red-500">*</span></label>
-                                <SearchableSelect
-                                    options={instanceOptions}
-                                    value={form.instance_id ? instanceOptions.find(o => o.value === form.instance_id) || null : null}
-                                    onChange={(opt) => {
-                                        const newInstanceId = opt ? Number(opt.value) : null;
-                                        setForm(prev => ({ ...prev, instance_id: newInstanceId }));
-                                        // Keep pegawaiSkpd in sync so cari pegawai uses the correct OPD
-                                        setPegawaiSkpd(newInstanceId);
-                                    }}
-                                    placeholder="Pilih OPD..."
-                                    isLoading={instancesLoading}
-                                />
+                                {isSuperAdmin ? (
+                                    <SearchableSelect
+                                        options={instanceOptions}
+                                        value={form.instance_id ? instanceOptions.find(o => o.value === form.instance_id) || null : null}
+                                        onChange={(opt) => {
+                                            const newInstanceId = opt ? Number(opt.value) : null;
+                                            setForm(prev => ({ ...prev, instance_id: newInstanceId }));
+                                            // Keep pegawaiSkpd in sync so cari pegawai uses the correct OPD
+                                            setPegawaiSkpd(newInstanceId);
+                                        }}
+                                        placeholder="Pilih OPD..."
+                                        isLoading={instancesLoading}
+                                    />
+                                ) : (
+                                    <input
+                                        type="text"
+                                        value={instanceOptions.find(o => o.value === form.instance_id)?.label || ''}
+                                        disabled
+                                        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl bg-gray-50 text-gray-500 cursor-not-allowed"
+                                    />
+                                )}
                             </div>
 
                             {/* Cari Pegawai Button */}

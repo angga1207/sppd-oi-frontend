@@ -27,6 +27,7 @@ interface EmployeeItem {
     pangkat: string | null;
     kepala_skpd: string | null;
     instance?: { id: number; name: string; alias: string | null } | null;
+    is_kepegawaian?: boolean;
 }
 
 interface SyncLogItem {
@@ -398,18 +399,19 @@ export default function DaftarPegawaiPage() {
                                                     {emp.nama_lengkap}
                                                 </p>
                                                 <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                                                    {emp.jenis_pegawai && (
-                                                        <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-semibold ${emp.jenis_pegawai === 'PNS' ? 'bg-blue-100 text-blue-700' :
-                                                            emp.jenis_pegawai === 'PPPK' ? 'bg-purple-100 text-purple-700' :
-                                                                'bg-gray-100 text-gray-600'
-                                                            }`}>
-                                                            {emp.jenis_pegawai}
-                                                        </span>
-                                                    )}
-                                                    {emp.kepala_skpd === 'Y' && (
+                                                    {emp.kepala_skpd === 'Y' ? (
                                                         <span className="px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700">
-                                                            Kepala
+                                                            Kepala SKPD
                                                         </span>
+                                                    ) : (
+                                                        emp.jenis_pegawai && (
+                                                            <span className={`inline-flex px-1.5 py-0.5 rounded-md text-[10px] font-semibold capitalize ${emp.jenis_pegawai === 'PNS' ? 'bg-blue-100 text-blue-700' :
+                                                                emp.jenis_pegawai === 'PPPK' ? 'bg-purple-100 text-purple-700' :
+                                                                    'bg-gray-100 text-gray-600'
+                                                                }`}>
+                                                                {emp.jenis_pegawai}
+                                                            </span>
+                                                        )
                                                     )}
                                                 </div>
                                             </div>
@@ -437,7 +439,7 @@ export default function DaftarPegawaiPage() {
                                         </div>
 
                                         {/* Card Footer */}
-                                        {(emp.golongan || emp.pangkat || emp.eselon) && (
+                                        {(emp.golongan || emp.pangkat || emp.eselon || emp.is_kepegawaian) && (
                                             <div className="mt-3 pt-3 border-t border-bubblegum-50 flex items-center gap-2 flex-wrap">
                                                 {emp.golongan && (
                                                     <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-bubblegum-50 text-bubblegum-600">
@@ -452,6 +454,11 @@ export default function DaftarPegawaiPage() {
                                                 {emp.eselon && (
                                                     <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-teal-50 text-teal-600">
                                                         Es. {emp.eselon}
+                                                    </span>
+                                                )}
+                                                {emp.is_kepegawaian == true && (
+                                                    <span className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-yellow-50 text-yellow-600">
+                                                        Admin Kepegawaian
                                                     </span>
                                                 )}
                                             </div>

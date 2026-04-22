@@ -43,6 +43,7 @@ export interface Employee {
   eselon: string | null;
   golongan: string | null;
   pangkat: string | null;
+  is_kepegawaian?: boolean;
 }
 
 export interface AuthResponse {

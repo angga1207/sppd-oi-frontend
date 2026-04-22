@@ -23,6 +23,7 @@ interface MenuItem {
   href: string;
   icon: typeof FiHome;
   superAdminOnly?: boolean;
+  kepegawaianAccess?: boolean;
 }
 
 const menuItems: MenuItem[] = [
@@ -30,7 +31,7 @@ const menuItems: MenuItem[] = [
   { label: 'Surat Tugas', href: '/dashboard/surat-tugas', icon: FiFileText },
   { label: 'SPD Saya', href: '/dashboard/spd-saya', icon: FiSend },
   { label: 'Daftar Pegawai', href: '/dashboard/daftar-pegawai', icon: FiUsers, superAdminOnly: true },
-  { label: 'Master PPK', href: '/dashboard/ppk', icon: FiUserCheck, superAdminOnly: true },
+  { label: 'Master PPK', href: '/dashboard/ppk', icon: FiUserCheck, superAdminOnly: true, kepegawaianAccess: true },
   { label: 'Keamanan Login', href: '/dashboard/keamanan-login', icon: FiShield, superAdminOnly: true },
   { label: 'Laporan', href: '/dashboard/laporan', icon: FiBarChart2 },
   { label: 'Aktivitas', href: '/dashboard/aktivitas', icon: FiActivity },
@@ -47,9 +48,10 @@ export default function Sidebar({ isOpen, collapsed, onClose }: SidebarProps) {
   const { user } = useAuth();
 
   const isSuperAdmin = user?.role?.slug === 'super-admin';
+  const isKepegawaian = user?.employee?.is_kepegawaian === true;
 
   const visibleMenuItems = menuItems.filter(
-    (item) => !item.superAdminOnly || isSuperAdmin
+    (item) => !item.superAdminOnly || isSuperAdmin || (item.kepegawaianAccess && isKepegawaian)
   );
 
   const sidebarClasses = [
